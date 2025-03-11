@@ -15,14 +15,15 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.io.File;
 
 public final class BlockyWhitelist extends JavaPlugin implements Listener {
-    private DiscordService discordService;
-    private DiscordLinkService discordLinkService;
+    private DiscordService discordService = Bukkit.getServicesManager().load(DiscordService.class);
+    private DiscordLinkService discordLinkService = Bukkit.getServicesManager().load(DiscordLinkService.class);
     private JSONStore jsonStore;
 
     @Override
     public void onEnable() {
-        discordService = Bukkit.getServicesManager().load(DiscordService.class);
-        discordLinkService = Bukkit.getServicesManager().load(DiscordLinkService.class);
+        if (discordService == null) {
+            discordService = Bukkit.getServicesManager().load(DiscordService.class);
+        }
         try {
             discordService.getInteractionController().registerCommand(new WhitelistSlashCommand());
         } catch (InteractionException e) {
@@ -93,11 +94,11 @@ public final class BlockyWhitelist extends JavaPlugin implements Listener {
     }
 
     public static DiscordService getDiscordService() {
-        return getInstance().discordService;
+        return getInstance().discordService == null ? Bukkit.getServicesManager().load(DiscordService.class) : getInstance().discordService;
     }
 
     public static DiscordLinkService getDiscordLinkService() {
-        return getInstance().discordLinkService;
+        return getInstance().discordLinkService == null ? Bukkit.getServicesManager().load(DiscordLinkService.class) : getInstance().discordLinkService;
     }
 
     public static String getDiscordTag(final Player player) {
