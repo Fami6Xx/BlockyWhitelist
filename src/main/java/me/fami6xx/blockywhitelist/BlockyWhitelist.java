@@ -41,6 +41,10 @@ public final class BlockyWhitelist extends JavaPlugin {
         jsonStore.save();
     }
 
+    public JSONStore getJsonStore() {
+        return jsonStore;
+    }
+
     public static BlockyWhitelist getInstance() {
         return getPlugin(BlockyWhitelist.class);
     }
