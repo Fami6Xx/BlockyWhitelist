@@ -30,7 +30,15 @@ public class WhitelistRolesMenu extends EasyPaginatedMenu {
     @Override
     public ItemStack getItemFromIndex(int index) {
         InteractionRole role = discordService.getRole(blockyWhitelist.getJsonStore().addedRoles.get(index));
-        if (role == null) return null;
+        if (role == null) {
+            ItemStack barrier = FamiUtils.makeItem(Material.BARRIER, "&c&lERROR! &7Role not found!", "&7Role ID: &c" + blockyWhitelist.getJsonStore().addedRoles.get(index) ,"&7Click to remove");
+            ItemMeta meta = barrier.getItemMeta();
+            if (meta == null) return null;
+            NamespacedKey key = new NamespacedKey(blockyWhitelist, "whitelist");
+            meta.getPersistentDataContainer().set(key, PersistentDataType.STRING, blockyWhitelist.getJsonStore().addedRoles.get(index));
+            barrier.setItemMeta(meta);
+            return barrier;
+        }
         ItemStack item = FamiUtils.makeItem(Material.EMERALD, FamiUtils.format("&b" + role.getName()), "&7Click to remove");
         ItemMeta meta = item.getItemMeta();
         if (meta == null) return null;
