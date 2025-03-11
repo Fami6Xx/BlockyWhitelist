@@ -2,8 +2,6 @@ package me.fami6xx.blockywhitelist;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 
 import java.io.File;
 import java.io.FileReader;
@@ -11,16 +9,15 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
-import java.lang.reflect.Field;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 public class JSONStore {
-    private final Gson gson;
-    private final File file;
+    private transient Gson gson;
+    private transient File file;
 
-    public HashMap<String, Object> playerData = new HashMap<>();
-    public HashMap<Integer, String> worldSettings = new HashMap<>();
+    public List<String> allowedRoles = new ArrayList<>();
+    public List<String> addedRoles = new ArrayList<>();
 
     public JSONStore(File file) {
         this.file = file;
@@ -28,29 +25,17 @@ public class JSONStore {
         this.gson = new GsonBuilder().setPrettyPrinting().create();
     }
 
+    private void setData(File file, Gson gson) {
+        this.file = file;
+        this.gson = gson;
+    }
+
     /**
      * Saves all fields of type Map (e.g. HashMap) in this class to the file.
      */
     public void save() {
-        JsonObject root = new JsonObject();
-        Field[] fields = this.getClass().getDeclaredFields();
-        for (Field field : fields) {
-            // Check if the field is a Map (which includes HashMap).
-            if (Map.class.isAssignableFrom(field.getType())) {
-                field.setAccessible(true);
-                try {
-                    Object value = field.get(this);
-                    // Convert the field value to a JsonElement using its generic type.
-                    JsonElement element = gson.toJsonTree(value, field.getGenericType());
-                    // Use the field name as the key in the JSON.
-                    root.add(field.getName(), element);
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
         try (Writer writer = new FileWriter(file)) {
-            gson.toJson(root, writer);
+            gson.toJson(this, writer);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -59,28 +44,19 @@ public class JSONStore {
     /**
      * Loads and assigns JSON data to all Map fields in this class from the file.
      */
-    public void load() {
+    public static JSONStore load(File file) {
         if (!file.exists()) {
-            return; // Nothing to load.
+            return new JSONStore(file); // Nothing to load.
         }
         try (Reader reader = new FileReader(file)) {
             // Read the entire JSON file as a JsonObject.
-            JsonObject root = gson.fromJson(reader, JsonObject.class);
-            Field[] fields = this.getClass().getDeclaredFields();
-            for (Field field : fields) {
-                if (Map.class.isAssignableFrom(field.getType())) {
-                    field.setAccessible(true);
-                    // Check if the JSON contains an entry for this field.
-                    if (root.has(field.getName())) {
-                        JsonElement element = root.get(field.getName());
-                        // Deserialize the JSON element back to the field's type.
-                        Object map = gson.fromJson(element, field.getGenericType());
-                        field.set(this, map);
-                    }
-                }
-            }
-        } catch (IOException | IllegalAccessException e) {
+            Gson gson = new GsonBuilder().setPrettyPrinting().create();
+            JSONStore json = gson.fromJson(reader, JSONStore.class);
+            json.setData(file, gson);
+            return json;
+        } catch (IOException  e) {
             e.printStackTrace();
         }
+        return null;
     }
 }

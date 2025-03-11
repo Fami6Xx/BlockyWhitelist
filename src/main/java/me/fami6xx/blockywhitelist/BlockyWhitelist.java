@@ -31,16 +31,7 @@ public final class BlockyWhitelist extends JavaPlugin {
 
         File file = new File(getDataFolder(), "data.json");
 
-        if (file.exists()) {
-            try {
-                file.createNewFile();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
-        jsonStore = new JSONStore(file);
-        jsonStore.load();
+        jsonStore = JSONStore.load(file);
     }
 
     @Override
