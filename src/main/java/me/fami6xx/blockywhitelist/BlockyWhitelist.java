@@ -62,7 +62,7 @@ public final class BlockyWhitelist extends JavaPlugin implements Listener {
             return;
         }
 
-        InteractionMember member = discordService.getMemberById(discordId).join();
+        InteractionMember member = getDiscordService().getMemberById(discordId).join();
         if (member == null) {
             kickPlayer(player);
             return;
@@ -94,11 +94,11 @@ public final class BlockyWhitelist extends JavaPlugin implements Listener {
     }
 
     public static DiscordService getDiscordService() {
-        return getInstance().discordService == null ? Bukkit.getServicesManager().load(DiscordService.class) : getInstance().discordService;
+        return Bukkit.getServicesManager().load(DiscordService.class);
     }
 
     public static DiscordLinkService getDiscordLinkService() {
-        return getInstance().discordLinkService == null ? Bukkit.getServicesManager().load(DiscordLinkService.class) : getInstance().discordLinkService;
+        return Bukkit.getServicesManager().load(DiscordLinkService.class);
     }
 
     public static String getDiscordTag(final Player player) {
