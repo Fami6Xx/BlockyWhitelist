@@ -58,7 +58,6 @@ public class WhitelistSlashCommand implements InteractionCommand {
             return;
         }
 
-        event.reply("Přidávám whitelist roli...");
         InteractionMember member = event.getUserArgument("user");
         if (member == null) {
             event.reply("Nastala chyba při hledání člena. Zkontrolujte zda jste správně označili člena.");
