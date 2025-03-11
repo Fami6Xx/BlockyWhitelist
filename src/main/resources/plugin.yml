@@ -14,7 +14,7 @@ commands:
     description: Main command for BlockyWhitelist
     usage: /<command>
     aliases:
-      - bw
+      - bwl
 permissions:
   blockywhitelist.use:
     description: Allows the player to use the /blockywhitelist command
