@@ -18,3 +18,5 @@ commands:
 permissions:
   blockywhitelist.use:
     description: Allows the player to use the /blockywhitelist command
+  blockywhitelist.ignore:
+    description: Allows the player to ignore the whitelist

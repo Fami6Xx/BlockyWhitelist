@@ -50,6 +50,11 @@ public final class BlockyWhitelist extends JavaPlugin implements Listener {
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         final Player player = event.getPlayer();
+
+        if (player.hasPermission("blockywhitelist.ignore")) {
+            return;
+        }
+
         final String discordId = getDiscordId(player);
         if (discordId == null) {
             kickPlayer(player);
