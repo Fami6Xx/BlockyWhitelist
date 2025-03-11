@@ -1,5 +1,6 @@
 package me.fami6xx.blockywhitelist;
 
+import me.fami6xx.blockywhitelist.menus.ChooseNextStepMenu;
 import me.fami6xx.rpuniverse.RPUniverse;
 import me.fami6xx.rpuniverse.core.misc.utils.FamiUtils;
 import org.bukkit.command.Command;
@@ -20,6 +21,8 @@ public class BlockyWhitelistCommand implements CommandExecutor {
             player.sendMessage(FamiUtils.format("&c&lERROR! &7" + RPUniverse.getLanguageHandler().errorYouDontHavePermissionToUseThisCommandMessage));
             return true;
         }
+
+        new ChooseNextStepMenu(RPUniverse.getInstance().getMenuManager().getPlayerMenu(player)).open();
         return true;
     }
 }
