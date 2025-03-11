@@ -2,5 +2,10 @@ name: BlockyWhitelist
 version: '${project.version}'
 main: me.fami6xx.blockywhitelist.BlockyWhitelist
 api-version: '1.20'
+depend:
+  - Essentials
+  - EssentialsDiscord
+  - EssentialsDiscordLink
+  - RPUniverse
 libraries:
   - 'com.google.code.gson:gson:2.10.1'
