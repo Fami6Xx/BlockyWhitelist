@@ -1,10 +1,8 @@
 package me.fami6xx.blockywhitelist;
 
-import net.essentialsx.api.v2.services.discord.InteractionCommand;
-import net.essentialsx.api.v2.services.discord.InteractionCommandArgument;
-import net.essentialsx.api.v2.services.discord.InteractionCommandArgumentType;
-import net.essentialsx.api.v2.services.discord.InteractionEvent;
+import net.essentialsx.api.v2.services.discord.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class WhitelistSlashCommand implements InteractionCommand {
@@ -41,6 +39,40 @@ public class WhitelistSlashCommand implements InteractionCommand {
 
     @Override
     public void onCommand(InteractionEvent event) {
+        DiscordService service = BlockyWhitelist.getDiscordService();
+
+        boolean containsRole = false;
+        for (String roleId : BlockyWhitelist.getInstance().getJsonStore().allowedRoles) {
+            InteractionRole role = service.getRole(roleId);
+            if(role == null) {
+                event.reply("Nastala chyba při hledání whitelist role. Prosím kontaktujte administrátora.");
+                return;
+            }
+
+            if (event.getMember().hasRole(role)) {
+                containsRole = true;
+            }
+        }
+        if (!containsRole) {
+            event.reply("Nemáte oprávnění použít tento příkaz.");
+            return;
+        }
+
+        event.reply("Přidávám whitelist roli...");
+        InteractionMember member = event.getUserArgument("user");
+        if (member == null) {
+            event.reply("Nastala chyba při hledání člena. Zkontrolujte zda jste správně označili člena.");
+            return;
+        }
+        List<InteractionRole> roles = new ArrayList<>();
+        for (String roleId : BlockyWhitelist.getInstance().getJsonStore().addedRoles) {
+            InteractionRole role = service.getRole(roleId);
+            if(role != null) {
+                roles.add(role);
+            }
+        }
+        service.modifyMemberRoles(member, roles, null);
+        event.reply("Whitelist role byla úspěšně přidána!");
 
     }
 }
