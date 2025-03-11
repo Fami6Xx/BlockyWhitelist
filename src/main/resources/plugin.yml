@@ -9,6 +9,12 @@ depend:
   - RPUniverse
 libraries:
   - 'com.google.code.gson:gson:2.10.1'
+commands:
+  blockywhitelist:
+    description: Main command for BlockyWhitelist
+    usage: /<command>
+    aliases:
+      - bw
 permissions:
   blockywhitelist.use:
     description: Allows the player to use the /blockywhitelist command

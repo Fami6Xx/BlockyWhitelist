@@ -32,6 +32,8 @@ public final class BlockyWhitelist extends JavaPlugin {
         File file = new File(getDataFolder(), "data.json");
 
         jsonStore = JSONStore.load(file);
+
+        this.getCommand("blockywhitelist").setExecutor(new BlockyWhitelistCommand());
     }
 
     @Override
