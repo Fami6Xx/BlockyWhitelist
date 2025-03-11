@@ -94,11 +94,21 @@ public final class BlockyWhitelist extends JavaPlugin implements Listener {
     }
 
     public static DiscordService getDiscordService() {
-        return Bukkit.getServicesManager().load(DiscordService.class);
+        DiscordService service = Bukkit.getServicesManager().load(DiscordService.class);
+        if (service == null) {
+            getInstance().getLogger().severe("Discord service not found!");
+            throw new RuntimeException("Discord service not found!");
+        }
+        return service;
     }
 
     public static DiscordLinkService getDiscordLinkService() {
-        return Bukkit.getServicesManager().load(DiscordLinkService.class);
+        DiscordLinkService service = Bukkit.getServicesManager().load(DiscordLinkService.class);
+        if (service == null) {
+            getInstance().getLogger().severe("DiscordLink service not found!");
+            throw new RuntimeException("DiscordLink service not found!");
+        }
+        return service;
     }
 
     public static String getDiscordTag(final Player player) {
