@@ -25,6 +25,7 @@ public class JSONStore {
     public String botToken = "";
     public String guildId = "";
     public HashMap<UUID, Long> linkedPlayers = new HashMap<>();
+    public HashMap<UUID, String> pendingPlayers = new HashMap<>();
 
     public JSONStore(File file) {
         this.file = file;
