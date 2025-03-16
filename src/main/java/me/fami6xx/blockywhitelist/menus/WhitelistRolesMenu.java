@@ -62,14 +62,14 @@ public class WhitelistRolesMenu extends EasyPaginatedMenu {
             new ChooseRoleMenu(playerMenu) {
                 @Override
                 public void handleRoleSelection(Role role) {
-                    blockyWhitelist.getJsonStore().allowedRoles.add(role.getId());
+                    blockyWhitelist.getJsonStore().addedRoles.add(role.getId());
                     blockyWhitelist.getJsonStore().save();
                     WhitelistRolesMenu.this.open();
                 }
 
                 @Override
                 public boolean isAlreadySelected(Role role) {
-                    return blockyWhitelist.getJsonStore().allowedRoles.contains(role.getId());
+                    return blockyWhitelist.getJsonStore().addedRoles.contains(role.getId());
                 }
             }.open();
             return;
