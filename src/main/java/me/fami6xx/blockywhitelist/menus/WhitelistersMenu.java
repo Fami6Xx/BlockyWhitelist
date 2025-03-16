@@ -91,7 +91,7 @@ public class WhitelistersMenu extends EasyPaginatedMenu {
 
     @Override
     public String getMenuName() {
-        return FamiUtils.format("&b&lBW &cWhitelisters");
+        return FamiUtils.format("&b&lBW &cWhitelist Adder Roles");
     }
 
     @Override
