@@ -9,6 +9,7 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Role;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -40,12 +41,20 @@ public abstract class ChooseRoleMenu extends EasyPaginatedMenu {
     @Override
     public ItemStack getItemFromIndex(int index) {
         Role role = guild.getRoles().get(index);
-        ItemStack item = FamiUtils.makeItem(Material.PAPER, FamiUtils.format("&b" + role.getName()), "&7Click to select");
+        ItemStack item;
+        if (isAlreadySelected(role)) {
+            item = FamiUtils.makeItem(Material.EMERALD_BLOCK, FamiUtils.format("&b" + role.getName()), "&7Already selected");
+        } else {
+            item = FamiUtils.makeItem(Material.EMERALD, FamiUtils.format("&b" + role.getName()), "&7Click to select");
+        }
         ItemMeta meta = item.getItemMeta();
         if (meta == null) return null;
         NamespacedKey key = new NamespacedKey(blockyWhitelist, "role");
         meta.getPersistentDataContainer().set(key, PersistentDataType.STRING, role.getId());
         item.setItemMeta(meta);
+        if (isAlreadySelected(role)) {
+            return FamiUtils.addGlow(item);
+        }
         return item;
     }
 
@@ -59,6 +68,7 @@ public abstract class ChooseRoleMenu extends EasyPaginatedMenu {
         if (e.getCurrentItem() == null) return;
         if (e.getCurrentItem().getItemMeta() == null) return;
         if (e.getCurrentItem().getItemMeta().getPersistentDataContainer().isEmpty()) return;
+        if (e.getCurrentItem().getItemMeta().hasEnchant(Enchantment.ARROW_INFINITE)) return;
         NamespacedKey key = new NamespacedKey(blockyWhitelist, "role");
         String roleId = e.getCurrentItem().getItemMeta().getPersistentDataContainer().get(key, PersistentDataType.STRING);
         if (roleId == null) return;
@@ -71,4 +81,6 @@ public abstract class ChooseRoleMenu extends EasyPaginatedMenu {
     public void addAdditionalItems() {}
 
     public abstract void handleRoleSelection(Role role);
+
+    public abstract boolean isAlreadySelected(Role role);
 }
