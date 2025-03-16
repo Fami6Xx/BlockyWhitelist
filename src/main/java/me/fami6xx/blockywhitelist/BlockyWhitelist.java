@@ -123,7 +123,7 @@ public final class BlockyWhitelist extends JavaPlugin implements Listener {
                     .queue();
 
             guild.upsertCommand("whitelist", "Whitelistne hráče.")
-                    .addOption(OptionType.USER, "user", "Hráč, kterého chcete whitelistnout.", true, true)
+                    .addOption(OptionType.USER, "user", "Hráč, kterého chcete whitelistnout.", true)
                     .queue();
 
             guild.upsertCommand("failed", "Hráči se nepodařil pokus o whitelist.")
@@ -138,7 +138,7 @@ public final class BlockyWhitelist extends JavaPlugin implements Listener {
             } else if (e instanceof IllegalArgumentException) {
                 errors.add("Bot token is empty");
             } else if (e instanceof IllegalStateException) {
-                errors.add("Failed to connect to Discord server, check Guild Id.");
+                errors.add("Something went wrong: " + e.getMessage());
             } else {
                 errors.add("Failed initializing JDA: " + e.getMessage());
             }
