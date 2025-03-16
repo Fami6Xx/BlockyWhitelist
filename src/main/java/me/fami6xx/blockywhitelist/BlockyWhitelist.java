@@ -127,6 +127,36 @@ public final class BlockyWhitelist extends JavaPlugin implements Listener {
                 throw new IllegalStateException("Failed to connect to Discord server");
             }
 
+            // Role check
+            for (String roleId : jsonStore.allowedRoles) {
+                if (guild.getRoleById(roleId) == null) {
+                    getLogger().severe("Failed to find role with id " + roleId);
+                    errors.add("Failed to find role with id " + roleId);
+                }
+            }
+
+            for (String roleId : jsonStore.addedRoles) {
+                if (guild.getRoleById(roleId) == null) {
+                    getLogger().severe("Failed to find role with id " + roleId);
+                    errors.add("Failed to find role with id " + roleId);
+                }
+            }
+
+            if (jsonStore.failedRoleIdOne.isEmpty() || guild.getRoleById(jsonStore.failedRoleIdOne) == null) {
+                getLogger().severe("Failed to find role with id " + jsonStore.failedRoleIdOne);
+                errors.add("Failed to find role with id " + jsonStore.failedRoleIdOne);
+            }
+
+            if (jsonStore.failedRoleIdTwo.isEmpty() || guild.getRoleById(jsonStore.failedRoleIdTwo) == null) {
+                getLogger().severe("Failed to find role with id " + jsonStore.failedRoleIdTwo);
+                errors.add("Failed to find role with id " + jsonStore.failedRoleIdTwo);
+            }
+
+            if (jsonStore.failedRoleIdThree.isEmpty() || guild.getRoleById(jsonStore.failedRoleIdThree) == null) {
+                getLogger().severe("Failed to find role with id " + jsonStore.failedRoleIdThree);
+                errors.add("Failed to find role with id " + jsonStore.failedRoleIdThree);
+            }
+
             guild.upsertCommand("link", "Linkne váš Discord účet s MC účtem.")
                     .addOption(OptionType.STRING, "code", "Váš kód, zobrazen při napojení na MC server.", true)
                     .queue();

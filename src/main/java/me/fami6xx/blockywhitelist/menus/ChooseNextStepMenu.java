@@ -25,7 +25,7 @@ public class ChooseNextStepMenu extends Menu {
 
     @Override
     public int getSlots() {
-        return 9;
+        return 18;
     }
 
     @Override
@@ -110,6 +110,17 @@ public class ChooseNextStepMenu extends Menu {
                 WhitelistRolesMenu whitelistRolesMenu = new WhitelistRolesMenu(playerMenu);
                 whitelistRolesMenu.open();
                 break;
+            case REDSTONE:
+                if (blockyWhitelist.getJDA() == null) {
+                    player.sendMessage(FamiUtils.format("&b&lBW &cPlease set the bot token and guild id first."));
+                    player.closeInventory();
+                    return;
+                }
+
+                // Open the FailedAttemptsMenu
+                FailedAttemptsMenu failedAttemptsMenu = new FailedAttemptsMenu(playerMenu);
+                failedAttemptsMenu.open();
+                break;
         }
     }
 
@@ -127,6 +138,7 @@ public class ChooseNextStepMenu extends Menu {
         }
         inventory.setItem(5, FamiUtils.makeItem(Material.PAPER, "&a&lWhitelist Adders", "&7Click to manage which roles can add whitelist"));
         inventory.setItem(7, FamiUtils.makeItem(Material.EMERALD, "&a&lWhitelist roles", "&7Click to manage which roles are whitelisted"));
+        inventory.setItem(12, FamiUtils.makeItem(Material.REDSTONE, "&a&lFailed Attempts", "&7Click to see failed attempts roles"));
         setFillerGlass();
     }
 

@@ -27,6 +27,9 @@ public class JSONStore {
     public String guildId = "";
     public HashMap<UUID, String> linkedPlayers = new HashMap<>();
     public HashMap<String, UUID> pendingPlayers = new HashMap<>();
+    public String failedRoleIdOne = "";
+    public String failedRoleIdTwo = "";
+    public String failedRoleIdThree = "";
 
     public JSONStore(File file) {
         this.file = file;
