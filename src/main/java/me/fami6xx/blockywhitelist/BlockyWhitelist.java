@@ -73,6 +73,7 @@ public final class BlockyWhitelist extends JavaPlugin implements Listener {
         try {
             jsonStore.save();
             if (jda != null) {
+                getLogger().info("Shutting down Discord bot");
                 jda.shutdown();
                 // Allow at most 10 seconds for remaining requests to finish
                 if (!jda.awaitShutdown(Duration.ofSeconds(10))) {
@@ -81,7 +82,7 @@ public final class BlockyWhitelist extends JavaPlugin implements Listener {
                 }
             }
         } catch (Exception e) {
-            getLogger().severe("Failed to shutdown BlockyWhitelist");
+            getLogger().severe("Failed to shutdown");
             getLogger().severe(e.getMessage());
         }
     }
