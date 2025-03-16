@@ -2,7 +2,6 @@ package me.fami6xx.blockywhitelist.menus;
 
 import me.fami6xx.blockywhitelist.BlockyWhitelist;
 import me.fami6xx.rpuniverse.core.menuapi.types.EasyPaginatedMenu;
-import me.fami6xx.rpuniverse.core.menuapi.types.Menu;
 import me.fami6xx.rpuniverse.core.menuapi.utils.MenuTag;
 import me.fami6xx.rpuniverse.core.menuapi.utils.PlayerMenu;
 import me.fami6xx.rpuniverse.core.misc.utils.FamiUtils;
@@ -21,7 +20,6 @@ import java.util.List;
 public class WhitelistersMenu extends EasyPaginatedMenu {
     private final BlockyWhitelist blockyWhitelist;
     private final Guild guild;
-    private final Menu thisMenu = this;
 
     public WhitelistersMenu(PlayerMenu menu) {
         super(menu);
@@ -65,7 +63,7 @@ public class WhitelistersMenu extends EasyPaginatedMenu {
                 public void handleRoleSelection(Role role) {
                     blockyWhitelist.getJsonStore().allowedRoles.add(role.getId());
                     blockyWhitelist.getJsonStore().save();
-                    thisMenu.open();
+                    WhitelistersMenu.this.open();
                 }
 
                 @Override
