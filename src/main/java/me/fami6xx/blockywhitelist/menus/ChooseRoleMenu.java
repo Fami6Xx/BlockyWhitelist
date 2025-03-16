@@ -30,7 +30,7 @@ public abstract class ChooseRoleMenu extends EasyPaginatedMenu {
 
     @Override
     public String getMenuName() {
-        return FamiUtils.format("&b&lBW &cChoose a role");
+        return FamiUtils.format("&b&lBW &cSelect a role");
     }
 
     @Override
