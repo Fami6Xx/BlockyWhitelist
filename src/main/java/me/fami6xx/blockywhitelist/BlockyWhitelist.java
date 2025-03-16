@@ -7,6 +7,7 @@ import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.exceptions.InvalidTokenException;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.kyori.adventure.text.Component;
@@ -98,11 +99,28 @@ public final class BlockyWhitelist extends JavaPlugin implements Listener {
         }
 
         if (jsonStore.linkedPlayers.containsKey(event.getUniqueId())) {
+            String discordId = jsonStore.linkedPlayers.get(event.getUniqueId());
+            if (discordId == null) {
+                event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, Component.text(getKickMessageNotLinked(event.getUniqueId())));
+                return;
+            }
+            if (guild.getMemberById(discordId) == null) {
+                event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, Component.text(getKickMessageNotLinked(event.getUniqueId())));
+                return;
+            }
+            Member member = guild.getMemberById(discordId);
+            boolean whitelisted = member.getRoles().stream().anyMatch(role -> jsonStore.addedRoles.contains(role.getId()));
+            if (!whitelisted) {
+                event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_WHITELIST, Component.text(getKickMessageNotWhitelisted()));
+                return;
+            }
+
             return;
         }
 
         if (!jsonStore.pendingPlayers.containsValue(event.getUniqueId()) || jsonStore.pendingPlayers.containsValue(event.getUniqueId())) {
             event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_WHITELIST, Component.text(getKickMessageNotLinked(event.getUniqueId())));
+            return;
         }
     }
 
