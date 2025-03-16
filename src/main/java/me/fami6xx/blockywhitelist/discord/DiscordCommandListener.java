@@ -135,13 +135,6 @@ public class DiscordCommandListener extends ListenerAdapter {
                 return;
             }
 
-            if (!jsonStore.pendingPlayers.get(code).equals(event.getMember().getId())) {
-                event.reply("Neplatný kód.")
-                        .setEphemeral(true)
-                        .queue();
-                return;
-            }
-
             UUID toLinkUser = jsonStore.pendingPlayers.get(code);
 
             jsonStore.pendingPlayers.remove(code);
