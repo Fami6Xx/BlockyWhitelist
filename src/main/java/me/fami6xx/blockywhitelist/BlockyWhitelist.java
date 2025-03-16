@@ -101,7 +101,7 @@ public final class BlockyWhitelist extends JavaPlugin implements Listener {
             return;
         }
 
-        if (!jsonStore.pendingPlayers.containsKey(event.getUniqueId()) || jsonStore.pendingPlayers.containsKey(event.getUniqueId())) {
+        if (!jsonStore.pendingPlayers.containsValue(event.getUniqueId()) || jsonStore.pendingPlayers.containsValue(event.getUniqueId())) {
             event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_WHITELIST, Component.text(getKickMessageNotLinked(event.getUniqueId())));
         }
     }
@@ -165,10 +165,11 @@ public final class BlockyWhitelist extends JavaPlugin implements Listener {
 
     private String getKickMessageNotLinked(UUID uuid) {
         try {
-            if (jsonStore.pendingPlayers.containsKey(uuid)) {
+            if (jsonStore.pendingPlayers.containsValue(uuid)) {
                 String code;
                 try {
-                    code = jsonStore.pendingPlayers.get(uuid);
+                    Collection<UUID> coll = jsonStore.pendingPlayers.values();
+                    code = coll.stream().filter(uuid::equals).findFirst().orElse(null).toString();
                 } catch (Exception e) {
                     getLogger().severe("Failed to get code for player " + uuid);
                     return FamiUtils.format("&b&lBlockyWhitelist\n\n&r&cMusis propojit ucet.\n\n&r&7Nepodarilo se nam ziskat tvuj kod, zkus to znovu.");
@@ -177,7 +178,7 @@ public final class BlockyWhitelist extends JavaPlugin implements Listener {
             }
             String code = generateRandomString(6);
             int attempts = 0;
-            while (jsonStore.pendingPlayers.containsValue(code)) {
+            while (jsonStore.pendingPlayers.containsKey(code)) {
                 if (attempts >= 10) {
                     getLogger().severe("Failed to generate a unique code");
                     return FamiUtils.format("&b&lBlockyWhitelist\n\n&r&cMusis propojit ucet.\n\n&r&7Prosim kontaktuj admina.");
@@ -189,7 +190,7 @@ public final class BlockyWhitelist extends JavaPlugin implements Listener {
             new BukkitRunnable() {
                 @Override
                 public void run() {
-                    jsonStore.pendingPlayers.put(uuid, finalCode);
+                    jsonStore.pendingPlayers.put(finalCode, uuid);
                     jsonStore.save();
                 }
             }.runTask(this);
