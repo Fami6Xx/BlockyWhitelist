@@ -9,6 +9,7 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 import java.util.List;
+import java.util.UUID;
 
 public class DiscordCommandListener extends ListenerAdapter {
     @Override
@@ -83,6 +84,57 @@ public class DiscordCommandListener extends ListenerAdapter {
             });
 
             event.reply("Hráč " + toWhitelistUser.getAsMention() + " byl úspěšně whitelistnut!")
+                    .queue();
+        }
+
+        if ("link".equalsIgnoreCase(command)) {
+            if (event.getMember() == null) {
+                event.reply("Tento příkaz může použít jen člen Discord serveru.")
+                        .setEphemeral(true)
+                        .queue();
+                return;
+            }
+
+            if (event.getGuild() == null) {
+                event.reply("Tento příkaz může být použit jen na Discord serveru.")
+                        .setEphemeral(true)
+                        .queue();
+                return;
+            }
+
+            BlockyWhitelist plugin = BlockyWhitelist.getInstance();
+            JSONStore jsonStore = plugin.getJsonStore();
+
+            if (!event.getGuild().getId().equals(jsonStore.guildId)) {
+                event.reply("Tento příkaz může být použit jen na Discord serveru.")
+                        .setEphemeral(true)
+                        .queue();
+                return;
+            }
+
+            if (event.getOption("code") == null) {
+                event.reply("Nebyl poskytnut žádný uživatel.")
+                        .setEphemeral(true)
+                        .queue();
+                return;
+            }
+
+            if (jsonStore.linkedPlayers.containsValue(event.getMember().getId())) {
+                event.reply("Již máš propojený účet!")
+                        .setEphemeral(true)
+                        .queue();
+                return;
+            }
+
+            String code = event.getOption("code").getAsString();
+
+            UUID toLinkUser = jsonStore.pendingPlayers.get(code);
+
+            jsonStore.pendingPlayers.remove(code);
+            jsonStore.linkedPlayers.put(toLinkUser, event.getMember().getId());
+            jsonStore.save();
+
+            event.reply("Tvůj účet byl úspěšně propojen!")
                     .setEphemeral(true)
                     .queue();
         }
