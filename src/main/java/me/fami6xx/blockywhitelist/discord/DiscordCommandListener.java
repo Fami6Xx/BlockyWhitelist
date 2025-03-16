@@ -138,5 +138,88 @@ public class DiscordCommandListener extends ListenerAdapter {
                     .setEphemeral(true)
                     .queue();
         }
+
+        if ("failed".equalsIgnoreCase(command)) {
+            if (event.getMember() == null) {
+                event.reply("Tento příkaz může použít jen člen Discord serveru.")
+                        .setEphemeral(true)
+                        .queue();
+                return;
+            }
+
+            if (event.getGuild() == null) {
+                event.reply("Tento příkaz může být použit jen na Discord serveru.")
+                        .setEphemeral(true)
+                        .queue();
+                return;
+            }
+
+            BlockyWhitelist plugin = BlockyWhitelist.getInstance();
+            JSONStore jsonStore = plugin.getJsonStore();
+
+            if (!event.getGuild().getId().equals(jsonStore.guildId)) {
+                event.reply("Tento příkaz může být použit jen na Discord serveru.")
+                        .setEphemeral(true)
+                        .queue();
+                return;
+            }
+
+            if (event.getOption("attempt") == null) {
+                event.reply("Nebylo poskytnuto číslo pokusu.")
+                        .setEphemeral(true)
+                        .queue();
+                return;
+            }
+
+            if (event.getOption("user") == null) {
+                event.reply("Nebyl poskytnut žádný uživatel.")
+                        .setEphemeral(true)
+                        .queue();
+                return;
+            }
+
+            int attempt = event.getOption("attempt").getAsInt();
+            User toFailUser = event.getOption("user").getAsUser();
+
+            if (attempt < 1 || attempt > 3) {
+                event.reply("Neplatné číslo pokusu.")
+                        .setEphemeral(true)
+                        .queue();
+                return;
+            }
+
+            String roleId = switch (attempt) {
+                case 1 -> jsonStore.failedRoleIdOne;
+                case 2 -> jsonStore.failedRoleIdTwo;
+                case 3 -> jsonStore.failedRoleIdThree;
+                default -> null;
+            };
+
+            if (roleId == null || roleId.isEmpty()) {
+                event.reply("Nebyla nastavena role pro tento pokus.")
+                        .setEphemeral(true)
+                        .queue();
+                return;
+            }
+
+            Role role = event.getGuild().getRoleById(roleId);
+            if (role == null) {
+                event.reply("Role pro tento pokus nebyla nalezena.")
+                        .setEphemeral(true)
+                        .queue();
+                return;
+            }
+
+            if (event.getGuild().getMembersWithRoles(role).stream().anyMatch(member -> member.getId().equals(toFailUser.getId()))) {
+                event.reply("Hráč " + toFailUser.getAsMention() + " již má tuto roli!")
+                        .setEphemeral(true)
+                        .queue();
+                return;
+            }
+
+            event.getGuild().addRoleToMember(toFailUser, role).queue();
+            event.reply("Hráč " + toFailUser.getAsMention() + " byl úspěšně označen za neúspěšného!")
+                    .queue();
+        }
     }
 }
