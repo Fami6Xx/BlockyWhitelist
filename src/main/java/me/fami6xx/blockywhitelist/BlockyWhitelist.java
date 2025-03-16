@@ -4,28 +4,20 @@ import me.fami6xx.blockywhitelist.discord.DiscordCommandListener;
 import me.fami6xx.rpuniverse.core.misc.utils.FamiUtils;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
+import net.dv8tion.jda.api.OnlineStatus;
+import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.exceptions.InvalidTokenException;
-import net.dv8tion.jda.api.interactions.DiscordLocale;
-import net.dv8tion.jda.api.interactions.IntegrationType;
-import net.dv8tion.jda.api.interactions.InteractionContextType;
-import net.dv8tion.jda.api.interactions.commands.Command;
-import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
-import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFunction;
-import net.dv8tion.jda.api.interactions.commands.localization.LocalizationMap;
-import net.dv8tion.jda.api.utils.data.DataObject;
 import net.milkbowl.vault.permission.Permission;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.UnmodifiableView;
 
 import java.io.File;
+import java.time.Duration;
 import java.util.*;
 
 public final class BlockyWhitelist extends JavaPlugin implements Listener {
@@ -77,7 +69,20 @@ public final class BlockyWhitelist extends JavaPlugin implements Listener {
 
     @Override
     public void onDisable() {
-        jsonStore.save();
+        try {
+            jsonStore.save();
+            if (jda != null) {
+                jda.shutdown();
+                // Allow at most 10 seconds for remaining requests to finish
+                if (!jda.awaitShutdown(Duration.ofSeconds(10))) {
+                    jda.shutdownNow(); // Cancel all remaining requests
+                    jda.awaitShutdown(); // Wait until shutdown is complete (indefinitely)
+                }
+            }
+        } catch (Exception e) {
+            getLogger().severe("Failed to shutdown BlockyWhitelist");
+            getLogger().severe(e.getMessage());
+        }
     }
 
     @EventHandler
@@ -98,6 +103,10 @@ public final class BlockyWhitelist extends JavaPlugin implements Listener {
         List<String> errors = new ArrayList<>();
         try {
             jda = JDABuilder.createDefault(jsonStore.botToken).build().awaitReady();
+
+            jda.setAutoReconnect(true);
+            jda.getPresence().setPresence(OnlineStatus.DO_NOT_DISTURB, Activity.watching("BlockyRP"), false);
+
             guild = jda.getGuildById(jsonStore.guildId);
             if (guild == null) {
                 throw new IllegalStateException("Failed to connect to Discord server");
@@ -114,8 +123,6 @@ public final class BlockyWhitelist extends JavaPlugin implements Listener {
                     .addOption(OptionType.INTEGER, "attempt", "Kolikátý pokus o whitelist to je.", true)
                     .addOption(OptionType.USER, "user", "Hráč, kterého se pokus týká.", true)
                     .queue();
-
-            guild.getMemberById()
 
             jda.addEventListener(new DiscordCommandListener());
         } catch (InvalidTokenException | IllegalArgumentException | IllegalStateException | InterruptedException e) {
@@ -150,6 +157,10 @@ public final class BlockyWhitelist extends JavaPlugin implements Listener {
 
     public Guild getGuild() {
         return guild;
+    }
+
+    public Permission getPerms() {
+        return perms;
     }
 
     /**
