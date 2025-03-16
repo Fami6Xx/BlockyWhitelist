@@ -5,8 +5,8 @@ import me.fami6xx.rpuniverse.core.menuapi.types.EasyPaginatedMenu;
 import me.fami6xx.rpuniverse.core.menuapi.utils.MenuTag;
 import me.fami6xx.rpuniverse.core.menuapi.utils.PlayerMenu;
 import me.fami6xx.rpuniverse.core.misc.utils.FamiUtils;
-import net.essentialsx.api.v2.services.discord.DiscordService;
-import net.essentialsx.api.v2.services.discord.InteractionRole;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Role;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -19,17 +19,19 @@ import java.util.List;
 
 public class WhitelistRolesMenu extends EasyPaginatedMenu {
     private final BlockyWhitelist blockyWhitelist;
-    private final DiscordService discordService;
+    private final NamespacedKey blockyWhitelistKey;
+    private final Guild guild;
 
     public WhitelistRolesMenu(PlayerMenu menu) {
         super(menu);
         blockyWhitelist = BlockyWhitelist.getInstance();
-        discordService = BlockyWhitelist.getDiscordService();
+        blockyWhitelistKey = new NamespacedKey(blockyWhitelist, "whitelist");
+        guild = blockyWhitelist.getGuild();
     }
 
     @Override
     public ItemStack getItemFromIndex(int index) {
-        InteractionRole role = discordService.getRole(blockyWhitelist.getJsonStore().addedRoles.get(index));
+        Role role = guild.getRoleById(blockyWhitelist.getJsonStore().addedRoles.get(index));
         if (role == null) {
             ItemStack barrier = FamiUtils.makeItem(Material.BARRIER, "&c&lERROR! &7Role not found!", "&7Role ID: &c" + blockyWhitelist.getJsonStore().addedRoles.get(index) ,"&7Click to remove");
             ItemMeta meta = barrier.getItemMeta();
@@ -42,8 +44,7 @@ public class WhitelistRolesMenu extends EasyPaginatedMenu {
         ItemStack item = FamiUtils.makeItem(Material.EMERALD, FamiUtils.format("&b" + role.getName()), "&7Click to remove");
         ItemMeta meta = item.getItemMeta();
         if (meta == null) return null;
-        NamespacedKey key = new NamespacedKey(blockyWhitelist, "whitelist");
-        meta.getPersistentDataContainer().set(key, PersistentDataType.STRING, role.getId());
+        meta.getPersistentDataContainer().set(blockyWhitelistKey, PersistentDataType.STRING, role.getId());
         item.setItemMeta(meta);
         return item;
     }
@@ -58,28 +59,25 @@ public class WhitelistRolesMenu extends EasyPaginatedMenu {
         if (e.getCurrentItem() == null) return;
 
         if (e.getCurrentItem().getType() == Material.EMERALD_BLOCK) {
-            if (playerMenu.getPendingAction() != null) {
-                playerMenu.getPlayer().sendMessage(FamiUtils.format("&c&lERROR! &7You have already something to write!"));
-            }
-            playerMenu.getPlayer().closeInventory();
-            playerMenu.getPlayer().sendMessage(FamiUtils.format("&b&lBlockyWhitelist"));
-            playerMenu.getPlayer().sendMessage(FamiUtils.format("&7Please write the id of the role you want to add to the whitelist."));
-            playerMenu.setPendingAction((s -> {
-                if (discordService.getRole(s) == null) {
-                    playerMenu.getPlayer().sendMessage(FamiUtils.format("&c&lERROR! &7Role not found!"));
-                    return;
+            new ChooseRoleMenu(playerMenu) {
+                @Override
+                public void handleRoleSelection(Role role) {
+                    blockyWhitelist.getJsonStore().allowedRoles.add(role.getId());
+                    blockyWhitelist.getJsonStore().save();
+                    WhitelistRolesMenu.this.open();
                 }
-                blockyWhitelist.getJsonStore().addedRoles.add(s);
-                blockyWhitelist.getJsonStore().save();
-                open();
-            }));
+
+                @Override
+                public boolean isAlreadySelected(Role role) {
+                    return blockyWhitelist.getJsonStore().allowedRoles.contains(role.getId());
+                }
+            }.open();
             return;
         }
 
         ItemMeta meta = e.getCurrentItem().getItemMeta();
         if (meta == null) return;
-        NamespacedKey key = new NamespacedKey(blockyWhitelist, "whitelist");
-        String roleId = meta.getPersistentDataContainer().get(key, PersistentDataType.STRING);
+        String roleId = meta.getPersistentDataContainer().get(blockyWhitelistKey, PersistentDataType.STRING);
         if (roleId == null) return;
         blockyWhitelist.getJsonStore().addedRoles.remove(roleId);
         blockyWhitelist.getJsonStore().save();
