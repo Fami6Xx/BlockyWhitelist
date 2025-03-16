@@ -52,6 +52,7 @@ public final class BlockyWhitelist extends JavaPlugin implements Listener {
         boolean firstSetup = jsonStore.botToken.isEmpty() || jsonStore.guildId.isEmpty();
         if (firstSetup) {
             getLogger().info("First setup detected, please configure the plugin in-game");
+            getLogger().info("For setup, type /blockywhitelist");
         } else {
             getLogger().info("Bot token and guild ID loaded successfully");
             List<String> errors = loadJDA();
