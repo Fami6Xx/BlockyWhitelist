@@ -1,12 +1,7 @@
 # BlockyWhitelist
-A simple whitelist plugin using EssentialsX (And addons EssentialsXDiscord, EssentialsXDiscordLink)
-You setup which roles can add whitelist, which roles will be added when player is whitelisted and that is all.
+A simple whitelist plugin using Discord. In-game setup for bot and whitelist adders (Their roles) and whitelisted roles.
 
 ## Dependencies:
-- EssentialsX
-- EssentialsXDiscord
-- EssentialsXDiscordLink
 - RPUniverse
+- Vault
 
-### Current status:
-<red>Not Working (EssentialsXDiscordLink issue)</red>
