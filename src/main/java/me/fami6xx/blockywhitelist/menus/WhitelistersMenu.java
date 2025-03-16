@@ -2,11 +2,12 @@ package me.fami6xx.blockywhitelist.menus;
 
 import me.fami6xx.blockywhitelist.BlockyWhitelist;
 import me.fami6xx.rpuniverse.core.menuapi.types.EasyPaginatedMenu;
+import me.fami6xx.rpuniverse.core.menuapi.types.Menu;
 import me.fami6xx.rpuniverse.core.menuapi.utils.MenuTag;
 import me.fami6xx.rpuniverse.core.menuapi.utils.PlayerMenu;
 import me.fami6xx.rpuniverse.core.misc.utils.FamiUtils;
-import net.essentialsx.api.v2.services.discord.DiscordService;
-import net.essentialsx.api.v2.services.discord.InteractionRole;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Role;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -19,17 +20,18 @@ import java.util.List;
 
 public class WhitelistersMenu extends EasyPaginatedMenu {
     private final BlockyWhitelist blockyWhitelist;
-    private final DiscordService discordService;
+    private final Guild guild;
+    private final Menu thisMenu = this;
 
     public WhitelistersMenu(PlayerMenu menu) {
         super(menu);
         blockyWhitelist = BlockyWhitelist.getInstance();
-        discordService = BlockyWhitelist.getDiscordService();
+        guild = blockyWhitelist.getGuild();
     }
 
     @Override
     public ItemStack getItemFromIndex(int index) {
-        InteractionRole role = discordService.getRole(blockyWhitelist.getJsonStore().allowedRoles.get(index));
+        Role role = guild.getRoleById(blockyWhitelist.getJsonStore().allowedRoles.get(index));
         if (role == null) {
             ItemStack barrier = FamiUtils.makeItem(Material.BARRIER, "&c&lERROR! &7Role not found!", "&7Role ID: &c" + blockyWhitelist.getJsonStore().allowedRoles.get(index) ,"&7Click to remove");
             ItemMeta meta = barrier.getItemMeta();
@@ -58,21 +60,15 @@ public class WhitelistersMenu extends EasyPaginatedMenu {
         if (e.getCurrentItem() == null) return;
 
         if (e.getCurrentItem().getType() == Material.EMERALD_BLOCK) {
-            if (playerMenu.getPendingAction() != null) {
-                playerMenu.getPlayer().sendMessage(FamiUtils.format("&c&lERROR! &7You have already something to write!"));
-            }
-            playerMenu.getPlayer().closeInventory();
-            playerMenu.getPlayer().sendMessage(FamiUtils.format("&b&lBlockyWhitelist"));
-            playerMenu.getPlayer().sendMessage(FamiUtils.format("&7Please write the id of the role you want to add to the whitelist adders."));
-            playerMenu.setPendingAction((s -> {
-                if (discordService.getRole(s) == null) {
-                    playerMenu.getPlayer().sendMessage(FamiUtils.format("&c&lERROR! &7Role not found!"));
-                    return;
+            new ChooseRoleMenu(playerMenu) {
+                @Override
+                public void handleRoleSelection(Role role) {
+                    // ToDo: Handle somehow so that the role can't be added twice
+                    blockyWhitelist.getJsonStore().allowedRoles.add(role.getId());
+                    blockyWhitelist.getJsonStore().save();
+                    thisMenu.open();
                 }
-                blockyWhitelist.getJsonStore().allowedRoles.add(s);
-                blockyWhitelist.getJsonStore().save();
-                open();
-            }));
+            }.open();
             return;
         }
 
