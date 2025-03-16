@@ -113,7 +113,7 @@ public class DiscordCommandListener extends ListenerAdapter {
             }
 
             if (event.getOption("code") == null) {
-                event.reply("Nebyl poskytnut žádný uživatel.")
+                event.reply("Nebyl poskytnut žádný kód.")
                         .setEphemeral(true)
                         .queue();
                 return;
