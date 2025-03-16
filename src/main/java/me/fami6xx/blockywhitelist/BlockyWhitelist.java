@@ -143,17 +143,17 @@ public final class BlockyWhitelist extends JavaPlugin implements Listener {
                 }
             }
 
-            if (jsonStore.failedRoleIdOne.isEmpty() || guild.getRoleById(jsonStore.failedRoleIdOne) == null) {
+            if (!jsonStore.failedRoleIdOne.isEmpty() && guild.getRoleById(jsonStore.failedRoleIdOne) == null) {
                 getLogger().severe("Failed to find role with id " + jsonStore.failedRoleIdOne);
                 errors.add("Failed to find role with id " + jsonStore.failedRoleIdOne);
             }
 
-            if (jsonStore.failedRoleIdTwo.isEmpty() || guild.getRoleById(jsonStore.failedRoleIdTwo) == null) {
+            if (!jsonStore.failedRoleIdTwo.isEmpty() && guild.getRoleById(jsonStore.failedRoleIdTwo) == null) {
                 getLogger().severe("Failed to find role with id " + jsonStore.failedRoleIdTwo);
                 errors.add("Failed to find role with id " + jsonStore.failedRoleIdTwo);
             }
 
-            if (jsonStore.failedRoleIdThree.isEmpty() || guild.getRoleById(jsonStore.failedRoleIdThree) == null) {
+            if (!jsonStore.failedRoleIdThree.isEmpty() && guild.getRoleById(jsonStore.failedRoleIdThree) == null) {
                 getLogger().severe("Failed to find role with id " + jsonStore.failedRoleIdThree);
                 errors.add("Failed to find role with id " + jsonStore.failedRoleIdThree);
             }
