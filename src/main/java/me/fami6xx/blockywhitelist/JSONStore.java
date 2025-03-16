@@ -18,7 +18,9 @@ public class JSONStore {
     private transient Gson gson;
     private transient File file;
 
+    // The role IDS that are allowed to whitelist players.
     public List<String> allowedRoles = new ArrayList<>();
+    // The role IDS that are added to players when they are whitelisted.
     public List<String> addedRoles = new ArrayList<>();
     public String botToken = "";
     public String guildId = "";
