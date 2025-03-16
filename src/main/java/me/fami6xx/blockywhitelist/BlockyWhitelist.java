@@ -221,8 +221,8 @@ public final class BlockyWhitelist extends JavaPlugin implements Listener {
             if (jsonStore.pendingPlayers.containsValue(uuid)) {
                 String code;
                 try {
-                    Collection<UUID> coll = jsonStore.pendingPlayers.values();
-                    code = coll.stream().filter(uuid::equals).findFirst().orElse(null).toString();
+                    Collection<String> coll = jsonStore.pendingPlayers.keySet();
+                    code = coll.stream().filter(s -> jsonStore.pendingPlayers.get(s).equals(uuid)).findFirst().orElse(null).toString();
                 } catch (Exception e) {
                     getLogger().severe("Failed to get code for player " + uuid);
                     return FamiUtils.format("&b&lBlockyWhitelist\n\n&r&cMusis propojit ucet.\n\n&r&7Nepodarilo se nam ziskat tvuj kod, zkus to znovu.");
