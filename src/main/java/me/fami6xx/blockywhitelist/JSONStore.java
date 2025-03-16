@@ -3,6 +3,7 @@ package me.fami6xx.blockywhitelist;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import javax.annotation.Nullable;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -36,6 +37,21 @@ public class JSONStore {
     private void setData(File file, Gson gson) {
         this.file = file;
         this.gson = gson;
+    }
+
+    /**
+     * Links a player to a Discord user.
+     * @param discordId The Discord user's ID.
+     * @return The player's UUID.
+     */
+    @Nullable
+    public synchronized UUID getLinkedPlayer(String discordId) {
+        for (UUID uuid : linkedPlayers.keySet()) {
+            if (linkedPlayers.get(uuid).equals(discordId)) {
+                return uuid;
+            }
+        }
+        return null;
     }
 
     /**
