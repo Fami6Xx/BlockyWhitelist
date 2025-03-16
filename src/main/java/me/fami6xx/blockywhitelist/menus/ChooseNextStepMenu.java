@@ -138,7 +138,7 @@ public class ChooseNextStepMenu extends Menu {
         }
         inventory.setItem(5, FamiUtils.makeItem(Material.PAPER, "&a&lWhitelist Adders", "&7Click to manage which roles can add whitelist"));
         inventory.setItem(7, FamiUtils.makeItem(Material.EMERALD, "&a&lWhitelist roles", "&7Click to manage which roles are whitelisted"));
-        inventory.setItem(12, FamiUtils.makeItem(Material.REDSTONE, "&a&lFailed Attempts", "&7Click to see failed attempts roles"));
+        inventory.setItem(13, FamiUtils.makeItem(Material.REDSTONE, "&a&lFailed Attempts", "&7Click to see failed attempts roles"));
         setFillerGlass();
     }
 
