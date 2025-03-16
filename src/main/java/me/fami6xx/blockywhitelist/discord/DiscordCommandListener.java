@@ -1,13 +1,90 @@
 package me.fami6xx.blockywhitelist.discord;
 
+import me.fami6xx.blockywhitelist.BlockyWhitelist;
+import me.fami6xx.blockywhitelist.JSONStore;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+
+import java.util.List;
 
 public class DiscordCommandListener extends ListenerAdapter {
     @Override
     public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {
-        if (event.getName().equals("say")) {
-            event.reply(event.getOption("content").getAsString()).queue(); // reply immediately
+        String command = event.getName();
+
+        if ("whitelist".equalsIgnoreCase(command)) {
+            if (event.getMember() == null) {
+                event.reply("Tento příkaz může použít jen člen Discord serveru.")
+                        .setEphemeral(true)
+                        .queue();
+                return;
+            }
+
+            if (event.getGuild() == null) {
+                event.reply("Tento příkaz může být použit jen na Discord serveru.")
+                        .setEphemeral(true)
+                        .queue();
+                return;
+            }
+
+            BlockyWhitelist plugin = BlockyWhitelist.getInstance();
+            JSONStore jsonStore = plugin.getJsonStore();
+
+            if (!event.getGuild().getId().equals(jsonStore.guildId)) {
+                event.reply("Tento příkaz může být použit jen na Discord serveru.")
+                        .setEphemeral(true)
+                        .queue();
+                return;
+            }
+
+            boolean hasPermission = event.getMember().getRoles().stream()
+                    .anyMatch(role -> jsonStore.allowedRoles.contains(role.getId()));
+
+            if (!hasPermission) {
+                event.reply("Nemáš oprávnění k použití tohoto příkazu!")
+                        .setEphemeral(true)
+                        .queue();
+                return;
+            }
+
+            if (event.getOption("user") == null) {
+                event.reply("Nebyl poskytnut žádný uživatel.")
+                        .setEphemeral(true)
+                        .queue();
+                return;
+            }
+
+            User toWhitelistUser = event.getOption("user").getAsUser();
+
+            List<Role> toAdd = event.getGuild().getRoles().stream()
+                    .filter(role -> jsonStore.addedRoles.contains(role.getId()))
+                    .toList();
+
+            if (toAdd.isEmpty()) {
+                event.reply("Není nastavena žádná role pro whitelistnutí.")
+                        .setEphemeral(true)
+                        .queue();
+                return;
+            }
+
+            List<Member> usersWithRoles = event.getGuild().getMembersWithRoles(toAdd);
+            if (usersWithRoles.stream().anyMatch(member -> member.getId().equals(toWhitelistUser.getId()))) {
+                event.reply("Hráč " + toWhitelistUser.getAsMention() + " již je whitelistnut!")
+                        .setEphemeral(true)
+                        .queue();
+                return;
+            }
+
+            toAdd.forEach(role -> {
+                event.getGuild().addRoleToMember(toWhitelistUser, role).queue();
+            });
+
+            event.reply("Hráč " + toWhitelistUser.getAsMention() + " byl úspěšně whitelistnut!")
+                    .setEphemeral(true)
+                    .queue();
         }
     }
 }
