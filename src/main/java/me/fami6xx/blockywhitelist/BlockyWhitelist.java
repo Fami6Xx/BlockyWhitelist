@@ -9,6 +9,7 @@ import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.exceptions.InvalidTokenException;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.milkbowl.vault.permission.Permission;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -104,15 +105,19 @@ public final class BlockyWhitelist extends JavaPlugin implements Listener {
     public List<String> loadJDA() {
         List<String> errors = new ArrayList<>();
         try {
-            jda = JDABuilder.createDefault(jsonStore.botToken).build().awaitReady();
+            jda = JDABuilder.createDefault(jsonStore.botToken)
+                    .build()
+                    .awaitReady();
 
             jda.setAutoReconnect(true);
             jda.getPresence().setPresence(OnlineStatus.DO_NOT_DISTURB, Activity.watching("BlockyRP"), false);
 
             guild = jda.getGuildById(jsonStore.guildId);
             if (guild == null) {
+                getLogger().severe("Failed to find guild with id " + jsonStore.guildId);
                 throw new IllegalStateException("Failed to connect to Discord server");
             }
+
             guild.upsertCommand("link", "Linkne váš Discord účet s MC účtem.")
                     .addOption(OptionType.STRING, "code", "Váš kód, zobrazen při napojení na MC server.", true)
                     .queue();

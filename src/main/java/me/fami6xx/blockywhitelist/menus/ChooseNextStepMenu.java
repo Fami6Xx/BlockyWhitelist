@@ -59,7 +59,7 @@ public class ChooseNextStepMenu extends Menu {
                     }
                     open();
                 });
-
+                break;
             case COMPASS:
                 if (playerMenu.getPendingAction() != null) {
                     player.sendMessage(FamiUtils.format("&c&lERROR! &7You have already something to write!"));
@@ -87,6 +87,7 @@ public class ChooseNextStepMenu extends Menu {
                     }
                     open();
                 });
+                break;
             case PAPER:
                 if (blockyWhitelist.getJDA() == null) {
                     player.sendMessage(FamiUtils.format("&b&lBW &cPlease set the bot token and guild id first."));
