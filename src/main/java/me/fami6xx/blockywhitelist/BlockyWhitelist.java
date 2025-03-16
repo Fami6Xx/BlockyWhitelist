@@ -10,6 +10,8 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.exceptions.InvalidTokenException;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.requests.GatewayIntent;
+import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import net.kyori.adventure.text.Component;
 import net.milkbowl.vault.permission.Permission;
 import org.bukkit.event.EventHandler;
@@ -30,6 +32,7 @@ public final class BlockyWhitelist extends JavaPlugin implements Listener {
     private JDA jda;
     private Guild guild;
     private static final SecureRandom random = new SecureRandom();
+    private boolean loadedMembers = false;
 
     @Override
     public void onEnable() {
@@ -58,6 +61,7 @@ public final class BlockyWhitelist extends JavaPlugin implements Listener {
         if (firstSetup) {
             getLogger().info("First setup detected, please configure the plugin in-game");
             getLogger().info("For setup, type /blockywhitelist");
+            loadedMembers = true;
         } else {
             getLogger().info("Bot token and guild ID loaded successfully");
             List<String> errors = loadJDA();
@@ -98,6 +102,11 @@ public final class BlockyWhitelist extends JavaPlugin implements Listener {
             return;
         }
 
+        if (!loadedMembers) {
+            event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, Component.text(getKickMessageLoadingMembers()));
+            return;
+        }
+
         if (jsonStore.linkedPlayers.containsKey(event.getUniqueId())) {
             String discordId = jsonStore.linkedPlayers.get(event.getUniqueId());
             if (discordId == null) {
@@ -105,6 +114,7 @@ public final class BlockyWhitelist extends JavaPlugin implements Listener {
                 return;
             }
             if (guild.getMemberById(discordId) == null) {
+                getLogger().warning("Discord ID " + discordId + " not found in guild");
                 event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, Component.text(getKickMessageNotLinked(event.getUniqueId())));
                 return;
             }
@@ -115,6 +125,7 @@ public final class BlockyWhitelist extends JavaPlugin implements Listener {
                 return;
             }
 
+            getLogger().info(event.getName() + " is whitelisted for @" + member.getEffectiveName() + " (" + member.getId() + ")");
             return;
         }
 
@@ -131,19 +142,30 @@ public final class BlockyWhitelist extends JavaPlugin implements Listener {
      */
     public List<String> loadJDA() {
         List<String> errors = new ArrayList<>();
+        loadedMembers = false;
         try {
             jda = JDABuilder.createDefault(jsonStore.botToken)
+                    .enableIntents(GatewayIntent.GUILD_MEMBERS)
+                    .setMemberCachePolicy(MemberCachePolicy.ALL)
                     .build()
                     .awaitReady();
 
             jda.setAutoReconnect(true);
-            jda.getPresence().setPresence(OnlineStatus.DO_NOT_DISTURB, Activity.watching("BlockyRP"), false);
 
             guild = jda.getGuildById(jsonStore.guildId);
             if (guild == null) {
                 getLogger().severe("Failed to find guild with id " + jsonStore.guildId);
                 throw new IllegalStateException("Failed to connect to Discord server");
             }
+
+            jda.getPresence().setPresence(OnlineStatus.DO_NOT_DISTURB, Activity.watching(guild.getName()), false);
+
+            // Load members to cache
+            guild.loadMembers().onSuccess(result -> {
+                getLogger().info("Loaded " + result.size() + " members to cache");
+                loadedMembers = true;
+                getLogger().info("Connection of players is now allowed");
+            });
 
             getLogger().info("Checking roles...");
             // Role check
@@ -209,11 +231,15 @@ public final class BlockyWhitelist extends JavaPlugin implements Listener {
     }
 
     private String getKickMessageNotWhitelisted() {
-        return FamiUtils.format("&b&lBlockyWhitelist\n\n&r&cMusis projit whitelistem.\n\n&r&7Prosim pripoj se na nas discord a udelej si WhiteList.");
+        return FamiUtils.format("&b&lBlockyWhitelist\n\n&r&cNemas whitelisted roli.\n\n&r&7Prosim pripoj se na nas discord a udelej si WhiteList.");
     }
 
     private String getKickMessageNotSetup() {
         return FamiUtils.format("&b&lBlockyWhitelist\n\n&r&cServer neni nastaven.\n\n&r&7Prosim kontaktuj admina.");
+    }
+
+    private String getKickMessageLoadingMembers() {
+        return FamiUtils.format("&b&lBlockyWhitelist\n\n&r&cServer se nacita.\n\n&r&7Zkus to znovu za chvili.");
     }
 
     private String getKickMessageNotLinked(UUID uuid) {
