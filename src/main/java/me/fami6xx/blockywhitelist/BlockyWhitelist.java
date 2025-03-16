@@ -127,6 +127,7 @@ public final class BlockyWhitelist extends JavaPlugin implements Listener {
                 throw new IllegalStateException("Failed to connect to Discord server");
             }
 
+            getLogger().info("Checking roles...");
             // Role check
             for (String roleId : jsonStore.allowedRoles) {
                 if (guild.getRoleById(roleId) == null) {
@@ -157,6 +158,8 @@ public final class BlockyWhitelist extends JavaPlugin implements Listener {
                 errors.add("Failed to find role with id " + jsonStore.failedRoleIdThree);
             }
 
+            getLogger().info("Registering commands...");
+
             guild.upsertCommand("link", "Linkne váš Discord účet s MC účtem.")
                     .addOption(OptionType.STRING, "code", "Váš kód, zobrazen při napojení na MC server.", true)
                     .queue();
@@ -171,6 +174,8 @@ public final class BlockyWhitelist extends JavaPlugin implements Listener {
                     .queue();
 
             jda.addEventListener(new DiscordCommandListener());
+
+            getLogger().info("Finished loading JDA");
         } catch (InvalidTokenException | IllegalArgumentException | IllegalStateException | InterruptedException e) {
             if (e instanceof InvalidTokenException) {
                 errors.add("Invalid bot token");
