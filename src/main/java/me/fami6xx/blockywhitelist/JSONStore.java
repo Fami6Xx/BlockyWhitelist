@@ -10,7 +10,9 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 
 public class JSONStore {
     private transient Gson gson;
@@ -18,6 +20,9 @@ public class JSONStore {
 
     public List<String> allowedRoles = new ArrayList<>();
     public List<String> addedRoles = new ArrayList<>();
+    public String botToken = "";
+    public String guildId = "";
+    public HashMap<UUID, Long> linkedPlayers = new HashMap<>();
 
     public JSONStore(File file) {
         this.file = file;
@@ -37,7 +42,8 @@ public class JSONStore {
         try (Writer writer = new FileWriter(file)) {
             gson.toJson(this, writer);
         } catch (IOException e) {
-            e.printStackTrace();
+            BlockyWhitelist.getInstance().getLogger().severe("Failed to save JSON data to " + file.getName());
+            BlockyWhitelist.getInstance().getLogger().severe(e.getMessage());
         }
     }
 
@@ -55,7 +61,8 @@ public class JSONStore {
             json.setData(file, gson);
             return json;
         } catch (IOException  e) {
-            e.printStackTrace();
+            BlockyWhitelist.getInstance().getLogger().severe("Failed to load JSON data from " + file.getName());
+            BlockyWhitelist.getInstance().getLogger().severe(e.getMessage());
         }
         return null;
     }
