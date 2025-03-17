@@ -171,31 +171,31 @@ public final class BlockyWhitelist extends JavaPlugin implements Listener {
             // Role check
             for (String roleId : jsonStore.allowedRoles) {
                 if (guild.getRoleById(roleId) == null) {
-                    getLogger().severe("Failed to find role with id " + roleId);
-                    errors.add("Failed to find role with id " + roleId);
+                    getLogger().severe("Failed to find whitelist adder role with id " + roleId);
+                    errors.add("Failed to find whitelist adder role with id " + roleId);
                 }
             }
 
             for (String roleId : jsonStore.addedRoles) {
                 if (guild.getRoleById(roleId) == null) {
-                    getLogger().severe("Failed to find role with id " + roleId);
-                    errors.add("Failed to find role with id " + roleId);
+                    getLogger().severe("Failed to find whitelisted role with id " + roleId);
+                    errors.add("Failed to find whitelisted role with id " + roleId);
                 }
             }
 
             if (!jsonStore.failedRoleIdOne.isEmpty() && guild.getRoleById(jsonStore.failedRoleIdOne) == null) {
-                getLogger().severe("Failed to find role with id " + jsonStore.failedRoleIdOne);
-                errors.add("Failed to find role with id " + jsonStore.failedRoleIdOne);
+                getLogger().severe("Failed to find failed attempt one role with id " + jsonStore.failedRoleIdOne);
+                errors.add("Failed to find failed attempt one role with id " + jsonStore.failedRoleIdOne);
             }
 
             if (!jsonStore.failedRoleIdTwo.isEmpty() && guild.getRoleById(jsonStore.failedRoleIdTwo) == null) {
-                getLogger().severe("Failed to find role with id " + jsonStore.failedRoleIdTwo);
-                errors.add("Failed to find role with id " + jsonStore.failedRoleIdTwo);
+                getLogger().severe("Failed to find failed attempt two role with id " + jsonStore.failedRoleIdTwo);
+                errors.add("Failed to find failed attempt two role with id " + jsonStore.failedRoleIdTwo);
             }
 
             if (!jsonStore.failedRoleIdThree.isEmpty() && guild.getRoleById(jsonStore.failedRoleIdThree) == null) {
-                getLogger().severe("Failed to find role with id " + jsonStore.failedRoleIdThree);
-                errors.add("Failed to find role with id " + jsonStore.failedRoleIdThree);
+                getLogger().severe("Failed to find failed attempt three role with id " + jsonStore.failedRoleIdThree);
+                errors.add("Failed to find failed attempt three role with id " + jsonStore.failedRoleIdThree);
             }
 
             getLogger().info("Registering commands...");
