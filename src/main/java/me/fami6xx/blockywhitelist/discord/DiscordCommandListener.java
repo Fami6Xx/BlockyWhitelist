@@ -225,7 +225,7 @@ public class DiscordCommandListener extends ListenerAdapter {
             }
 
             event.getGuild().addRoleToMember(toFailUser, role).queue();
-            event.reply("Hráči " + toFailUser.getAsMention() + " byla přidána role za pokus " + attempt + "!")
+            event.reply("Hráči " + toFailUser.getAsMention() + " byla přidána role za pokus č." + attempt + "!")
                     .queue();
         }
     }
