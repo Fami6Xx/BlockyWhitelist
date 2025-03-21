@@ -13,9 +13,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class WhitelistRolesMenu extends EasyPaginatedMenu {
     private final BlockyWhitelist blockyWhitelist;
     private final NamespacedKey blockyWhitelistKey;
