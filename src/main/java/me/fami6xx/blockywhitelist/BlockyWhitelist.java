@@ -107,6 +107,13 @@ public final class BlockyWhitelist extends JavaPlugin implements Listener {
     public void onDisable() {
         try {
             jsonStore.save();
+            try {
+                LocalizationUtil.saveStaticTranslationsToFile(Lang.class, langFile);
+                getLogger().info("Translations saved");
+            } catch (IOException e) {
+                getLogger().severe("Failed to save translations to " + langFile.getPath());
+                getLogger().severe(e.getMessage());
+            }
             if (jda != null) {
                 getLogger().info("Shutting down Discord bot");
                 jda.shutdown();
