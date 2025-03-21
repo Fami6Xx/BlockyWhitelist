@@ -17,8 +17,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import static com.fasterxml.jackson.databind.type.LogicalType.Map;
-
 public class DiscordCommandListener extends ListenerAdapter {
     @Override
     public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {
