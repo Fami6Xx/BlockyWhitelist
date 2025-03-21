@@ -1,9 +1,10 @@
 package me.fami6xx.blockywhitelist;
 
 import me.fami6xx.blockywhitelist.discord.DiscordCommandListener;
+import me.fami6xx.blockywhitelist.utils.FamiUtils;
 import me.fami6xx.blockywhitelist.utils.languages.Lang;
 import me.fami6xx.blockywhitelist.utils.languages.LocalizationUtil;
-import me.fami6xx.rpuniverse.core.misc.utils.FamiUtils;
+import me.fami6xx.blockywhitelist.utils.menus.MenuManager;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
@@ -15,11 +16,9 @@ import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import net.kyori.adventure.text.Component;
-import net.milkbowl.vault.permission.Permission;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
-import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -31,22 +30,16 @@ import java.util.*;
 
 public final class BlockyWhitelist extends JavaPlugin implements Listener {
     private JSONStore jsonStore;
-    private Permission perms;
     private JDA jda;
     private Guild guild;
     private static final SecureRandom random = new SecureRandom();
     private boolean loadedMembers = false;
+    private MenuManager menuManager;
 
     private File langFile;
 
     @Override
     public void onEnable() {
-        if (!setupPermissions()) {
-            getLogger().severe("Failed to hook Vault, disabling plugin");
-            getServer().getPluginManager().disablePlugin(this);
-            return;
-        }
-
         if (!getDataFolder().exists()) {
             getDataFolder().mkdir();
         }
@@ -81,6 +74,15 @@ public final class BlockyWhitelist extends JavaPlugin implements Listener {
                 getLogger().severe("Failed to load translations from " + langFile.getPath());
                 getLogger().severe(e.getMessage());
             }
+        }
+
+        menuManager = new MenuManager();
+
+        if (!menuManager.enable()) {
+            getLogger().severe("Failed to enable MenuManager! Disabling plugin...");
+            getServer().getPluginManager().disablePlugin(this);
+        }else{
+            getLogger().info("MenuManager enabled!");
         }
 
         boolean firstSetup = jsonStore.botToken.isEmpty() || jsonStore.guildId.isEmpty();
@@ -339,26 +341,19 @@ public final class BlockyWhitelist extends JavaPlugin implements Listener {
         return guild;
     }
 
-    public Permission getPerms() {
-        return perms;
-    }
-
-    /**
-     * Setup Vault permissions by obtaining the Permission provider.
-     */
-    private boolean setupPermissions() {
-        RegisteredServiceProvider<Permission> rsp = getServer().getServicesManager().getRegistration(Permission.class);
-        if (rsp != null) {
-            perms = rsp.getProvider();
-        }
-        return perms != null;
-    }
-
     /**
      * Gets the Instance of the BlockyWhitelist plugin.
      * @return Instance of the BlockyWhitelist plugin.
      */
     public static BlockyWhitelist getInstance() {
         return getPlugin(BlockyWhitelist.class);
+    }
+
+    /**
+     * Get the MenuManager
+     * @return The MenuManager
+     */
+    public MenuManager getMenuManager() {
+        return menuManager;
     }
 }
