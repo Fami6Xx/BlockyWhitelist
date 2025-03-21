@@ -15,7 +15,6 @@ public class Lang {
     public static String errorYouDontHavePermissionToUseThisCommandMessage = "&cYou don't have permission to use this command.";
     public static String errorOnlyPlayersCanUseThisCommandMessage = "&cOnly players can use this command.";
 
-    // Discord command messages in English
     public static String errorNotDiscordMember = "Only Discord server members can use this command.";
     public static String errorNotGuild = "This command can only be used on a Discord server.";
     public static String errorNoPermission = "You do not have permission to use this command!";
