@@ -52,4 +52,12 @@ public class Lang {
 
     public static String usernameDiscordCommandDescription = "Retrieves the player's Minecraft username.";
     public static String usernameDiscordCommandUserProvided = "The user for whom you want to retrieve the username.";
+
+    public static String kickNotWhitelisted = "&b&lBlockyWhitelist\n\n&r&cYou do not have the whitelisted role.\n\n&r&7Please join our Discord and register for the whitelist.";
+    public static String kickNotSetup = "&b&lBlockyWhitelist\n\n&r&cThe server is not set up.\n\n&r&7Please contact an admin.";
+    public static String kickLoadingMembers = "&b&lBlockyWhitelist\n\n&r&cThe server is loading.\n\n&r&7Please try again in a moment.";
+    public static String kickNotLinkedError = "&b&lBlockyWhitelist\n\n&r&cYou must link your account.\n\n&r&7We were unable to retrieve your code, please try again.";
+    public static String kickNotLinkedCode = "&b&lBlockyWhitelist\n\n&r&cYou must link your account.\n\n&r&7Your code: &a{code}\n&r&7Please type &a/link {code} &7in Discord.";
+    public static String kickNotLinkedContactAdmin = "&b&lBlockyWhitelist\n\n&r&cYou must link your account.\n\n&r&7Please contact an admin.";
+
 }

@@ -270,15 +270,15 @@ public final class BlockyWhitelist extends JavaPlugin implements Listener {
     }
 
     private String getKickMessageNotWhitelisted() {
-        return FamiUtils.format("&b&lBlockyWhitelist\n\n&r&cNemas whitelisted roli.\n\n&r&7Prosim pripoj se na nas discord a udelej si WhiteList.");
+        return FamiUtils.format(Lang.kickNotWhitelisted);
     }
 
     private String getKickMessageNotSetup() {
-        return FamiUtils.format("&b&lBlockyWhitelist\n\n&r&cServer neni nastaven.\n\n&r&7Prosim kontaktuj admina.");
+        return FamiUtils.format(Lang.kickNotSetup);
     }
 
     private String getKickMessageLoadingMembers() {
-        return FamiUtils.format("&b&lBlockyWhitelist\n\n&r&cServer se nacita.\n\n&r&7Zkus to znovu za chvili.");
+        return FamiUtils.format(Lang.kickLoadingMembers);
     }
 
     private String getKickMessageNotLinked(UUID uuid) {
@@ -286,20 +286,26 @@ public final class BlockyWhitelist extends JavaPlugin implements Listener {
             if (jsonStore.pendingPlayers.containsValue(uuid)) {
                 String code;
                 try {
-                    Collection<String> coll = jsonStore.pendingPlayers.keySet();
-                    code = coll.stream().filter(s -> jsonStore.pendingPlayers.get(s).equals(uuid)).findFirst().orElse(null).toString();
+                    Collection<String> codes = jsonStore.pendingPlayers.keySet();
+                    code = codes.stream()
+                            .filter(s -> jsonStore.pendingPlayers.get(s).equals(uuid))
+                            .findFirst()
+                            .orElse(null);
+                    if (code == null) {
+                        throw new Exception("No code found");
+                    }
                 } catch (Exception e) {
                     getLogger().severe("Failed to get code for player " + uuid);
-                    return FamiUtils.format("&b&lBlockyWhitelist\n\n&r&cMusis propojit ucet.\n\n&r&7Nepodarilo se nam ziskat tvuj kod, zkus to znovu.");
+                    return FamiUtils.format(Lang.kickNotLinkedError);
                 }
-                return FamiUtils.format("&b&lBlockyWhitelist\n\n&r&cMusis propojit ucet.\n\n&r&7Tvuj kod: &a" + code + "\n&r&7Prosim napis &a/link " + code + " &7do discordu.");
+                return FamiUtils.format(Lang.kickNotLinkedCode.replace("{code}", code));
             }
             String code = generateRandomString(6);
             int attempts = 0;
             while (jsonStore.pendingPlayers.containsKey(code)) {
                 if (attempts >= 10) {
                     getLogger().severe("Failed to generate a unique code");
-                    return FamiUtils.format("&b&lBlockyWhitelist\n\n&r&cMusis propojit ucet.\n\n&r&7Prosim kontaktuj admina.");
+                    return FamiUtils.format(Lang.kickNotLinkedContactAdmin);
                 }
                 code = generateRandomString(6);
                 attempts++;
@@ -312,10 +318,10 @@ public final class BlockyWhitelist extends JavaPlugin implements Listener {
                     jsonStore.save();
                 }
             }.runTask(this);
-            return FamiUtils.format("&b&lBlockyWhitelist\n\n&r&cMusis propojit ucet.\n\n&r&7Tvuj kod: &a" + code + "\n&r&7Prosim napis &a/link " + code + " &7do discordu.");
+            return FamiUtils.format(Lang.kickNotLinkedCode.replace("{code}", code));
         } catch (Exception e) {
             getLogger().severe("Failed to get code for player " + uuid);
-            return FamiUtils.format("&b&lBlockyWhitelist\n\n&r&cMusis propojit ucet.\n\n&r&7Nepodarilo se nam ziskat tvuj kod, zkus to znovu.");
+            return FamiUtils.format(Lang.kickNotLinkedError);
         }
     }
 
