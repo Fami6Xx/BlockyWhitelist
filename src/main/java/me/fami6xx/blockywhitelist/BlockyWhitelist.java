@@ -1,6 +1,8 @@
 package me.fami6xx.blockywhitelist;
 
 import me.fami6xx.blockywhitelist.discord.DiscordCommandListener;
+import me.fami6xx.blockywhitelist.utils.languages.Lang;
+import me.fami6xx.blockywhitelist.utils.languages.LocalizationUtil;
 import me.fami6xx.rpuniverse.core.misc.utils.FamiUtils;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -22,6 +24,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.File;
+import java.io.IOException;
 import java.security.SecureRandom;
 import java.time.Duration;
 import java.util.*;
@@ -33,6 +36,8 @@ public final class BlockyWhitelist extends JavaPlugin implements Listener {
     private Guild guild;
     private static final SecureRandom random = new SecureRandom();
     private boolean loadedMembers = false;
+
+    private File langFile;
 
     @Override
     public void onEnable() {
@@ -55,6 +60,27 @@ public final class BlockyWhitelist extends JavaPlugin implements Listener {
             getLogger().severe("Please delete BlockyWhitelist folder and restart the server");
             getServer().getPluginManager().disablePlugin(this);
             return;
+        }
+
+        langFile = new File(getDataFolder(), "languages.json");
+        if (!langFile.exists()) {
+            getLogger().info("Creating languages.json");
+            try {
+                LocalizationUtil.saveStaticTranslationsToFile(Lang.class, langFile);
+                getLogger().info("Translations saved");
+            } catch (IOException e) {
+                getLogger().severe("Failed to save translations to " + langFile.getPath());
+                getLogger().severe(e.getMessage());
+            }
+        } else {
+            getLogger().info("Loading translations");
+            try {
+                LocalizationUtil.loadStaticTranslationsFromFile(Lang.class, langFile);
+                getLogger().info("Translations loaded successfully");
+            } catch (IOException e) {
+                getLogger().severe("Failed to load translations from " + langFile.getPath());
+                getLogger().severe(e.getMessage());
+            }
         }
 
         boolean firstSetup = jsonStore.botToken.isEmpty() || jsonStore.guildId.isEmpty();
