@@ -9,10 +9,15 @@ import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+
+import static com.fasterxml.jackson.databind.type.LogicalType.Map;
 
 public class DiscordCommandListener extends ListenerAdapter {
     @Override
@@ -236,6 +241,70 @@ public class DiscordCommandListener extends ListenerAdapter {
             replace.put("{player}", toFailUser.getAsMention());
             replace.put("{attempt}", String.valueOf(attempt));
             event.reply(FamiUtils.replaceAndFormat(Lang.successRoleGivenForAttempt, replace))
+                    .queue();
+        }
+
+        if ("username".equalsIgnoreCase(command)) {
+            if (event.getMember() == null) {
+                event.reply(Lang.errorNotDiscordMember)
+                        .setEphemeral(true)
+                        .queue();
+                return;
+            }
+            if (event.getGuild() == null) {
+                event.reply(Lang.errorNotGuild)
+                        .setEphemeral(true)
+                        .queue();
+                return;
+            }
+
+            BlockyWhitelist plugin = BlockyWhitelist.getInstance();
+            JSONStore jsonStore = plugin.getJsonStore();
+
+            if (!event.getGuild().getId().equals(jsonStore.guildId)) {
+                event.reply(Lang.errorNotGuild)
+                        .setEphemeral(true)
+                        .queue();
+                return;
+            }
+
+            if (event.getOption("user") == null) {
+                event.reply(Lang.errorNoUserProvided)
+                        .setEphemeral(true)
+                        .queue();
+                return;
+            }
+
+            // Find the Minecraft UUID linked to the Discord member.
+            String discordId = event.getOption("user").getAsUser().getId();
+            UUID minecraftUUID = null;
+
+            for (Map.Entry<UUID, String> entry : jsonStore.linkedPlayers.entrySet()) {
+                if (entry.getValue().equals(discordId)) {
+                    minecraftUUID = entry.getKey();
+                    break;
+                }
+            }
+
+            if (minecraftUUID == null) {
+                event.reply(Lang.errorNoAccountLinked)
+                        .setEphemeral(true)
+                        .queue();
+                return;
+            }
+
+            // Get the Minecraft username using Bukkit's API.
+            OfflinePlayer player = Bukkit.getOfflinePlayer(minecraftUUID);
+            String username = player.getName();
+            if (username == null) {
+                username = Lang.unknown;
+            }
+
+            HashMap<String, String> replace = new HashMap<>();
+            replace.put("{player}", event.getMember().getAsMention());
+            replace.put("{username}", username);
+            event.reply(FamiUtils.replaceAndFormat(Lang.successUsernameRetrieved, replace))
+                    .setEphemeral(true)
                     .queue();
         }
     }

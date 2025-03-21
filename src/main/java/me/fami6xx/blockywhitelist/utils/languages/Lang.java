@@ -34,4 +34,22 @@ public class Lang {
     public static String errorRoleNotFound = "Role for this attempt was not found.";
     public static String errorPlayerAlreadyHasRole = "User {player} already has this role!";
     public static String successRoleGivenForAttempt = "User {player} has been given the role for attempt {attempt}!";
+
+    public static String unknown = "Unknown";
+
+    public static String errorNoAccountLinked = "There is no account linked with this discord account.";
+    public static String successUsernameRetrieved = "Username for {player} is {username}.";
+
+    public static String linkDiscordCommandDescription = "Link your Minecraft account with your Discord account.";
+    public static String linkDiscordCommandCodeProvided = "Your code shown when you try to connect to server.";
+
+    public static String whitelistDiscordCommandDescription = "Whitelist a player.";
+    public static String whitelistDiscordCommandUserProvided = "The user you want to whitelist.";
+
+    public static String failedDiscordCommandDescription = "Set the player's whitelist attempt as failed.";
+    public static String failedDiscordCommandAttemptProvided = "Indicates which whitelist attempt number it is. (1 to 3)";
+    public static String failedDiscordCommandUserProvided = "The player the attempt pertains to.";
+
+    public static String usernameDiscordCommandDescription = "Retrieves the player's Minecraft username.";
+    public static String usernameDiscordCommandUserProvided = "The user for whom you want to retrieve the username.";
 }

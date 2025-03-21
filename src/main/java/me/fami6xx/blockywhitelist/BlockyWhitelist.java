@@ -235,17 +235,21 @@ public final class BlockyWhitelist extends JavaPlugin implements Listener {
 
             getLogger().info("Registering commands...");
 
-            guild.upsertCommand("link", "Linkne váš Discord účet s MC účtem.")
-                    .addOption(OptionType.STRING, "code", "Váš kód, zobrazen při napojení na MC server.", true)
+            guild.upsertCommand("link", Lang.linkDiscordCommandDescription)
+                    .addOption(OptionType.STRING, "code", Lang.linkDiscordCommandCodeProvided, true)
                     .queue();
 
-            guild.upsertCommand("whitelist", "Whitelistne hráče.")
-                    .addOption(OptionType.USER, "user", "Hráč, kterého chcete whitelistnout.", true)
+            guild.upsertCommand("whitelist", Lang.whitelistDiscordCommandDescription)
+                    .addOption(OptionType.USER, "user", Lang.whitelistDiscordCommandUserProvided, true)
                     .queue();
 
-            guild.upsertCommand("failed", "Hráči se nepodařil pokus o whitelist.")
-                    .addOption(OptionType.INTEGER, "attempt", "Kolikátý pokus o whitelist to je.", true)
-                    .addOption(OptionType.USER, "user", "Hráč, kterého se pokus týká.", true)
+            guild.upsertCommand("failed", Lang.failedDiscordCommandDescription)
+                    .addOption(OptionType.INTEGER, "attempt", Lang.failedDiscordCommandAttemptProvided, true)
+                    .addOption(OptionType.USER, "user", Lang.failedDiscordCommandUserProvided, true)
+                    .queue();
+
+            guild.upsertCommand("username", Lang.usernameDiscordCommandDescription)
+                    .addOption(OptionType.USER, "user", Lang.usernameDiscordCommandUserProvided, true)
                     .queue();
 
             jda.addEventListener(new DiscordCommandListener());
