@@ -165,14 +165,14 @@ public class FamiUtils {
         ItemStack item = new ItemStack(material);
 
         ItemMeta itemMeta = item.getItemMeta();
-        itemMeta.setDisplayName(me.fami6xx.rpuniverse.core.misc.utils.FamiUtils.format(displayName));
+        itemMeta.setDisplayName(FamiUtils.format(displayName));
 
         if (lore != null && lore.length > 0) {
             List<String> loreList = Arrays.asList(lore);
             if (lore.length == 1 && (lore[0] != null && !lore[0].isEmpty())) {
                 loreList = Arrays.asList(lore[0].split("~"));
             }
-            loreList = loreList.stream().map(me.fami6xx.rpuniverse.core.misc.utils.FamiUtils::format).collect(Collectors.toList());
+            loreList = loreList.stream().map(FamiUtils::format).collect(Collectors.toList());
             itemMeta.setLore(loreList);
         }
 
