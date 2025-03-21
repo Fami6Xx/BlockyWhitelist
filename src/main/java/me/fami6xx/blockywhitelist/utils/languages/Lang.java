@@ -10,4 +10,6 @@ public class Lang {
     public static String closeItemLore = "&7Click to close this menu.";
     public static String errorMenuAlreadyOnFirstPage = "&cYou are already on the first page.";
     public static String errorMenuAlreadyOnLastPage = "&cYou are already on the last page.";
+    public static String errorYouDontHavePermissionToUseThisCommandMessage = "&cYou don't have permission to use this command.";
+    public static String errorOnlyPlayersCanUseThisCommandMessage = "&cOnly players can use this command.";
 }
