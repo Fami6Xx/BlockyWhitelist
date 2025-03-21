@@ -3,7 +3,6 @@ version: '${project.version}'
 main: me.fami6xx.blockywhitelist.BlockyWhitelist
 api-version: '1.20'
 depend:
-  - RPUniverse
   - Vault
 libraries:
   - 'com.google.code.gson:gson:2.10.1'
@@ -17,5 +16,3 @@ commands:
 permissions:
   blockywhitelist.use:
     description: Allows the player to use the /blockywhitelist command
-  blockywhitelist.ignore:
-    description: Allows the player to ignore the whitelist
