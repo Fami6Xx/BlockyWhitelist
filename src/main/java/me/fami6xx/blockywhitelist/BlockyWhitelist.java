@@ -92,7 +92,7 @@ public final class BlockyWhitelist extends JavaPlugin implements Listener {
             getLogger().info("Bot token and guild ID loaded successfully");
             List<String> errors = loadJDA();
             if (!errors.isEmpty()) {
-                getLogger().severe("Failed load JDA:");
+                getLogger().severe("Errors encountered while loading JDA:");
                 errors.forEach(getLogger()::severe);
                 return;
             }
