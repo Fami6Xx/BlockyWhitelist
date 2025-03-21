@@ -2,17 +2,13 @@ package me.fami6xx.blockywhitelist.menus;
 
 import me.fami6xx.blockywhitelist.BlockyWhitelist;
 import me.fami6xx.blockywhitelist.JSONStore;
-import me.fami6xx.rpuniverse.core.menuapi.types.Menu;
-import me.fami6xx.rpuniverse.core.menuapi.utils.MenuTag;
-import me.fami6xx.rpuniverse.core.menuapi.utils.PlayerMenu;
-import me.fami6xx.rpuniverse.core.misc.utils.FamiUtils;
+import me.fami6xx.blockywhitelist.utils.FamiUtils;
+import me.fami6xx.blockywhitelist.utils.menus.PlayerMenu;
+import me.fami6xx.blockywhitelist.utils.menus.types.Menu;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Role;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class FailedAttemptsMenu extends Menu {
     JSONStore store;
@@ -112,10 +108,5 @@ public class FailedAttemptsMenu extends Menu {
         }
 
         setFillerGlass();
-    }
-
-    @Override
-    public List<MenuTag> getMenuTags() {
-        return new ArrayList<>();
     }
 }

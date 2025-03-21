@@ -1,15 +1,13 @@
 package me.fami6xx.blockywhitelist.menus;
 
 import me.fami6xx.blockywhitelist.BlockyWhitelist;
-import me.fami6xx.rpuniverse.core.menuapi.types.Menu;
-import me.fami6xx.rpuniverse.core.menuapi.utils.MenuTag;
-import me.fami6xx.rpuniverse.core.menuapi.utils.PlayerMenu;
-import me.fami6xx.rpuniverse.core.misc.utils.FamiUtils;
+import me.fami6xx.blockywhitelist.utils.FamiUtils;
+import me.fami6xx.blockywhitelist.utils.menus.PlayerMenu;
+import me.fami6xx.blockywhitelist.utils.menus.types.Menu;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class ChooseNextStepMenu extends Menu {
@@ -140,10 +138,5 @@ public class ChooseNextStepMenu extends Menu {
         inventory.setItem(7, FamiUtils.makeItem(Material.EMERALD, "&a&lWhitelist roles", "&7Click to manage which roles are whitelisted"));
         inventory.setItem(13, FamiUtils.makeItem(Material.REDSTONE, "&a&lFailed Attempts", "&7Click to see failed attempts roles"));
         setFillerGlass();
-    }
-
-    @Override
-    public List<MenuTag> getMenuTags() {
-        return new ArrayList<>();
     }
 }

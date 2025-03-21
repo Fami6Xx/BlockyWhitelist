@@ -1,10 +1,9 @@
 package me.fami6xx.blockywhitelist.menus;
 
 import me.fami6xx.blockywhitelist.BlockyWhitelist;
-import me.fami6xx.rpuniverse.core.menuapi.types.EasyPaginatedMenu;
-import me.fami6xx.rpuniverse.core.menuapi.utils.MenuTag;
-import me.fami6xx.rpuniverse.core.menuapi.utils.PlayerMenu;
-import me.fami6xx.rpuniverse.core.misc.utils.FamiUtils;
+import me.fami6xx.blockywhitelist.utils.FamiUtils;
+import me.fami6xx.blockywhitelist.utils.menus.PlayerMenu;
+import me.fami6xx.blockywhitelist.utils.menus.types.EasyPaginatedMenu;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Role;
 import org.bukkit.Material;
@@ -92,10 +91,5 @@ public class WhitelistRolesMenu extends EasyPaginatedMenu {
     @Override
     public String getMenuName() {
         return FamiUtils.format("&b&lBW &cWhitelist Roles");
-    }
-
-    @Override
-    public List<MenuTag> getMenuTags() {
-        return new ArrayList<>();
     }
 }
