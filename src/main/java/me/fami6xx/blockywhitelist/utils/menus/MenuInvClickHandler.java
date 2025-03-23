@@ -1,6 +1,5 @@
 package me.fami6xx.blockywhitelist.utils.menus;
 
-import io.papermc.paper.event.player.AsyncChatEvent;
 import me.fami6xx.blockywhitelist.BlockyWhitelist;
 import me.fami6xx.blockywhitelist.utils.menus.types.Menu;
 import org.bukkit.entity.Player;
@@ -11,7 +10,9 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryInteractEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.inventory.InventoryHolder;
+import org.bukkit.scheduler.BukkitRunnable;
 
 public class MenuInvClickHandler implements Listener {
     @EventHandler
@@ -56,13 +57,19 @@ public class MenuInvClickHandler implements Listener {
         }
     }
 
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
-    public void onAsyncChat(AsyncChatEvent e) {
-        Player player = e.getPlayer();
-        if (BlockyWhitelist.getInstance().getMenuManager().getPlayerMenu(player).getPendingAction() != null) {
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onAsyncChat(AsyncPlayerChatEvent e) {
+        PlayerMenu playerMenu = BlockyWhitelist.getInstance().getMenuManager().getPlayerMenu(e.getPlayer());
+        if (playerMenu.getPendingAction() != null) {
             e.setCancelled(true);
-            BlockyWhitelist.getInstance().getMenuManager().getPlayerMenu(player).getPendingAction().accept(e.message().toString());
-            BlockyWhitelist.getInstance().getMenuManager().getPlayerMenu(player).clearPendingAction();
+            String input = e.getMessage();
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    playerMenu.getPendingAction().accept(input);
+                    playerMenu.clearPendingAction();
+                }
+            }.runTaskLater(BlockyWhitelist.getInstance(), 1L);
         }
     }
 }
