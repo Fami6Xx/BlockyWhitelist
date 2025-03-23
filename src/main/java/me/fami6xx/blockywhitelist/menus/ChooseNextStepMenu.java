@@ -119,6 +119,28 @@ public class ChooseNextStepMenu extends Menu {
                 FailedAttemptsMenu failedAttemptsMenu = new FailedAttemptsMenu(playerMenu);
                 failedAttemptsMenu.open();
                 break;
+            case EMERALD_BLOCK:
+                if (blockyWhitelist.getJDA() == null) {
+                    player.sendMessage(FamiUtils.format("&b&lBW &cPlease set the bot token and guild id first."));
+                    player.closeInventory();
+                    return;
+                }
+
+                // Open the LinkedUsersMenu
+                LinkedUsersMenu linkedUsersMenu = new LinkedUsersMenu(playerMenu);
+                linkedUsersMenu.open();
+                break;
+            case ARROW:
+                if (blockyWhitelist.getJDA() == null) {
+                    player.sendMessage(FamiUtils.format("&b&lBW &cPlease set the bot token and guild id first."));
+                    player.closeInventory();
+                    return;
+                }
+
+                // Open the PendingUsersMenu
+                PendingUsersMenu pendingUsersMenu = new PendingUsersMenu(playerMenu);
+                pendingUsersMenu.open();
+                break;
         }
     }
 
@@ -137,6 +159,9 @@ public class ChooseNextStepMenu extends Menu {
         inventory.setItem(5, FamiUtils.makeItem(Material.PAPER, "&a&lWhitelist Adders", "&7Click to manage which roles can add whitelist"));
         inventory.setItem(7, FamiUtils.makeItem(Material.EMERALD, "&a&lWhitelist roles", "&7Click to manage which roles are whitelisted"));
         inventory.setItem(13, FamiUtils.makeItem(Material.REDSTONE, "&a&lFailed Attempts", "&7Click to see failed attempts roles"));
+        // 15, 11
+        inventory.setItem(15, FamiUtils.makeItem(Material.EMERALD_BLOCK, "&b&lLinked users", "&7Click to see linked users"));
+        inventory.setItem(11, FamiUtils.makeItem(Material.ARROW, "&c&lPending users", "&7Click to see pending users who have not linked"));
         setFillerGlass();
     }
 }
