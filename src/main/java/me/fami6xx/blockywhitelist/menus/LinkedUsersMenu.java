@@ -16,8 +16,8 @@ import java.util.HashMap;
 import java.util.UUID;
 
 public class LinkedUsersMenu extends EasyPaginatedMenu {
-    private final HashMap<UUID, String> linkedPlayers;
-    private final UUID[] linkedPlayersKeys;
+    private HashMap<UUID, String> linkedPlayers;
+    private UUID[] linkedPlayersKeys;
     private final NamespacedKey key;
 
     public LinkedUsersMenu(PlayerMenu menu) {
@@ -30,6 +30,12 @@ public class LinkedUsersMenu extends EasyPaginatedMenu {
 
     @Override
     public ItemStack getItemFromIndex(int index) {
+        if (index == 0) {
+            BlockyWhitelist plugin = BlockyWhitelist.getInstance();
+            linkedPlayers = (HashMap<UUID, String>) plugin.getJsonStore().linkedPlayers.clone();
+            linkedPlayersKeys = linkedPlayers.keySet().toArray(new UUID[0]);
+        }
+
         UUID uuid = linkedPlayersKeys[index];
         String discordId = linkedPlayers.get(uuid);
 

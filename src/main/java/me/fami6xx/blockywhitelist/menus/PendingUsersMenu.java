@@ -17,9 +17,9 @@ import java.util.Set;
 import java.util.UUID;
 
 public class PendingUsersMenu extends EasyPaginatedMenu {
-    private final UUID[] pendingPlayers;
+    private UUID[] pendingPlayers;
     private final NamespacedKey key;
-    private final Set<Map.Entry<String, UUID>> pendingPlayersEntrySet;
+    private Set<Map.Entry<String, UUID>> pendingPlayersEntrySet;
 
     public PendingUsersMenu(PlayerMenu menu) {
         super(menu);
@@ -32,6 +32,12 @@ public class PendingUsersMenu extends EasyPaginatedMenu {
 
     @Override
     public ItemStack getItemFromIndex(int index) {
+        if (index == 0) {
+            BlockyWhitelist plugin = BlockyWhitelist.getInstance();
+            pendingPlayers = plugin.getJsonStore().pendingPlayers.values().toArray(new UUID[0]);
+            pendingPlayersEntrySet = plugin.getJsonStore().pendingPlayers.entrySet();
+        }
+
         UUID uuid = pendingPlayers[index];
         String linkKey;
 
