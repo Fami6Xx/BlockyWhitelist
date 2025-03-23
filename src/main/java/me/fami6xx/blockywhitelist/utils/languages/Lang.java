@@ -1,7 +1,7 @@
 package me.fami6xx.blockywhitelist.utils.languages;
 
 public class Lang {
-    public static String prefix = "&b&lBW& &8» &7";
+    public static String prefix = "&b&lBW &8» &7";
 
     public static String previousPageItemDisplayName = "&bPrevious page";
     public static String previousPageItemLore = "&7Click to go to the previous page.";
