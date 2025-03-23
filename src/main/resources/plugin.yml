@@ -1,7 +1,7 @@
 name: BlockyWhitelist
 version: '${project.version}'
 main: me.fami6xx.blockywhitelist.BlockyWhitelist
-api-version: '1.20'
+api-version: '1.14'
 libraries:
   - 'com.google.code.gson:gson:2.10.1'
   - 'net.dv8tion:JDA:5.3.0'

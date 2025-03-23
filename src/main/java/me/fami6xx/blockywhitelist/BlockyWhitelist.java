@@ -15,7 +15,6 @@ import net.dv8tion.jda.api.exceptions.InvalidTokenException;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
-import net.kyori.adventure.text.Component;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
@@ -138,25 +137,25 @@ public final class BlockyWhitelist extends JavaPlugin implements Listener {
         }
 
         if (!loadedMembers) {
-            event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, Component.text(getKickMessageLoadingMembers()));
+            event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, getKickMessageLoadingMembers());
             return;
         }
 
         if (jsonStore.linkedPlayers.containsKey(event.getUniqueId())) {
             String discordId = jsonStore.linkedPlayers.get(event.getUniqueId());
             if (discordId == null) {
-                event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, Component.text(getKickMessageNotLinked(event.getUniqueId())));
+                event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, getKickMessageNotLinked(event.getUniqueId()));
                 return;
             }
             if (guild.getMemberById(discordId) == null) {
                 getLogger().warning("Discord ID " + discordId + " not found in guild");
-                event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, Component.text(getKickMessageNotLinked(event.getUniqueId())));
+                event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, getKickMessageNotLinked(event.getUniqueId()));
                 return;
             }
             Member member = guild.getMemberById(discordId);
             boolean whitelisted = member.getRoles().stream().anyMatch(role -> jsonStore.addedRoles.contains(role.getId()));
             if (!whitelisted) {
-                event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_WHITELIST, Component.text(getKickMessageNotWhitelisted()));
+                event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_WHITELIST, getKickMessageNotWhitelisted());
                 return;
             }
 
@@ -165,7 +164,7 @@ public final class BlockyWhitelist extends JavaPlugin implements Listener {
         }
 
         if (!jsonStore.pendingPlayers.containsValue(event.getUniqueId()) || jsonStore.pendingPlayers.containsValue(event.getUniqueId())) {
-            event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_WHITELIST, Component.text(getKickMessageNotLinked(event.getUniqueId())));
+            event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_WHITELIST, getKickMessageNotLinked(event.getUniqueId()));
             return;
         }
     }
