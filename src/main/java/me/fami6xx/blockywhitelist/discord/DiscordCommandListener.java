@@ -179,6 +179,16 @@ public class DiscordCommandListener extends ListenerAdapter {
                 return;
             }
 
+            boolean hasPermission = event.getMember().getRoles().stream()
+                    .anyMatch(role -> jsonStore.allowedRoles.contains(role.getId()));
+
+            if (!hasPermission) {
+                event.reply(Lang.errorNoPermission)
+                        .setEphemeral(true)
+                        .queue();
+                return;
+            }
+
             if (event.getOption("attempt") == null) {
                 event.reply(Lang.errorNoAttemptProvided)
                         .setEphemeral(true)
@@ -258,6 +268,16 @@ public class DiscordCommandListener extends ListenerAdapter {
 
             BlockyWhitelist plugin = BlockyWhitelist.getInstance();
             JSONStore jsonStore = plugin.getJsonStore();
+
+            boolean hasPermission = event.getMember().getRoles().stream()
+                    .anyMatch(role -> jsonStore.allowedRoles.contains(role.getId()));
+
+            if (!hasPermission) {
+                event.reply(Lang.errorNoPermission)
+                        .setEphemeral(true)
+                        .queue();
+                return;
+            }
 
             if (!event.getGuild().getId().equals(jsonStore.guildId)) {
                 event.reply(Lang.errorNotGuild)
