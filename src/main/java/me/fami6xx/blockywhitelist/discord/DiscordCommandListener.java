@@ -8,7 +8,9 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 
@@ -103,11 +105,14 @@ public class DiscordCommandListener extends ListenerAdapter {
                 return;
             }
 
-            toAdd.forEach(role -> event.getGuild().addRoleToMember(toWhitelistUser, role).queue());
-
             HashMap<String, String> replace = new HashMap<>();
-            replace.put("{player}", toWhitelistUser.getAsMention());
-            event.reply(FamiUtils.replaceAndFormat(Lang.successPlayerWhitelisted, replace))
+            replace.put("{user}", toWhitelistUser.getAsMention());
+            event.reply(FamiUtils.replaceAndFormat(Lang.areYouSureToWhitelist, replace))
+                    .addActionRow(
+                            Button.success("confirm-bwl-" + toWhitelistUser.getId(), Lang.areYouSureConfirmButton),
+                            Button.danger("cancel-bwl", Lang.areYouSureCancelButton)
+                    )
+                    .setEphemeral(true)
                     .queue();
 
             plugin.getLogger().info(
@@ -371,6 +376,67 @@ public class DiscordCommandListener extends ListenerAdapter {
                             command,
                             username)
             );
+        }
+    }
+
+    @Override
+    public void onButtonInteraction(ButtonInteractionEvent event) {
+        if (event.getComponentId().contentEquals("confirm-bwl-")) {
+            String userId = event.getComponentId().substring(11);
+            BlockyWhitelist plugin = BlockyWhitelist.getInstance();
+            JSONStore jsonStore = plugin.getJsonStore();
+
+            User toWhitelistUser = event.getJDA().getUserById(userId);
+            if (toWhitelistUser == null) {
+                event.reply("User not found.")
+                        .setEphemeral(true)
+                        .queue();
+                return;
+            }
+
+            List<Role> toAdd = event.getGuild().getRoles().stream()
+                    .filter(role -> jsonStore.addedRoles.contains(role.getId()))
+                    .toList();
+
+            if (toAdd.isEmpty()) {
+                event.reply(Lang.errorNoRoleSet)
+                        .setEphemeral(true)
+                        .queue();
+                return;
+            }
+
+            List<Member> usersWithRoles = event.getGuild().getMembersWithRoles(toAdd);
+            if (usersWithRoles.stream().anyMatch(member -> member.getId().equals(toWhitelistUser.getId()))) {
+                HashMap<String, String> replace = new HashMap<>();
+                replace.put("{player}", toWhitelistUser.getAsMention());
+                event.reply(FamiUtils.replaceAndFormat(Lang.errorPlayerAlreadyWhitelisted, replace))
+                        .setEphemeral(true)
+                        .queue();
+                return;
+            }
+
+            for (Role role : toAdd) {
+                event.getGuild().addRoleToMember(toWhitelistUser, role).queue();
+            }
+
+            HashMap<String, String> replace = new HashMap<>();
+            replace.put("{player}", toWhitelistUser.getAsMention());
+            event.reply(FamiUtils.replaceAndFormat(Lang.successPlayerWhitelisted, replace))
+                    .setEphemeral(true)
+                    .queue();
+
+            plugin.getLogger().info(
+                    String.format("User %s (%s) confirmed whitelist for target %s",
+                            event.getUser().getName(),
+                            event.getUser().getId(),
+                            toWhitelistUser.getName())
+            );
+        }
+
+        if (event.getComponentId().contentEquals("cancel-bwl")) {
+            event.reply(Lang.cancelledWhitelisting)
+                    .setEphemeral(true)
+                    .queue();
         }
     }
 }

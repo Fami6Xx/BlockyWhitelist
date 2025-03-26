@@ -21,6 +21,10 @@ public class Lang {
     public static String errorNoUserProvided = "No user was provided.";
     public static String errorNoRoleSet = "No role has been set for whitelisting.";
     public static String errorPlayerAlreadyWhitelisted = "User {player} is already whitelisted!";
+    public static String areYouSureToWhitelist = "Are you sure you want to whitelist {user}?";
+    public static String areYouSureConfirmButton = "Confirm";
+    public static String areYouSureCancelButton = "Cancel";
+    public static String cancelledWhitelisting = "Whitelisting has been cancelled.";
     public static String successPlayerWhitelisted = "User {player} has been successfully whitelisted!";
 
     public static String errorNoCodeProvided = "No code was provided.";
