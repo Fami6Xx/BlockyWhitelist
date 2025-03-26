@@ -19,7 +19,7 @@ import java.util.UUID;
 
 public class DiscordCommandListener extends ListenerAdapter {
     private final Map<String, Long> lastCommandUsage = new HashMap<>();
-    private static final long COMMAND_COOLDOWN_MS = 3000;
+    private static final long COMMAND_COOLDOWN_MS = 1500;
 
     @Override
     public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {
@@ -109,6 +109,14 @@ public class DiscordCommandListener extends ListenerAdapter {
             replace.put("{player}", toWhitelistUser.getAsMention());
             event.reply(FamiUtils.replaceAndFormat(Lang.successPlayerWhitelisted, replace))
                     .queue();
+
+            plugin.getLogger().info(
+                    String.format("User %s (%s) executed %s command for target %s",
+                            event.getUser().getName(),
+                            event.getUser().getId(),
+                            command,
+                            toWhitelistUser.getName())
+            );
         }
 
         if ("link".equalsIgnoreCase(command)) {
@@ -151,6 +159,13 @@ public class DiscordCommandListener extends ListenerAdapter {
             }
 
             String code = event.getOption("code").getAsString();
+            // Validate the code format
+            if (!code.matches("^[A-Za-z0-9]{6}$")) {
+                event.reply("Invalid code format.")
+                        .setEphemeral(true)
+                        .queue();
+                return;
+            }
 
             if (!jsonStore.pendingPlayers.containsKey(code)) {
                 event.reply(Lang.errorInvalidCode)
@@ -266,6 +281,14 @@ public class DiscordCommandListener extends ListenerAdapter {
             replace.put("{attempt}", String.valueOf(attempt));
             event.reply(FamiUtils.replaceAndFormat(Lang.successRoleGivenForAttempt, replace))
                     .queue();
+
+            plugin.getLogger().info(
+                    String.format("User %s (%s) executed %s command for target %s",
+                            event.getUser().getName(),
+                            event.getUser().getId(),
+                            command,
+                            toFailUser.getName())
+            );
         }
 
         if ("username".equalsIgnoreCase(command)) {
@@ -340,6 +363,14 @@ public class DiscordCommandListener extends ListenerAdapter {
             event.reply(FamiUtils.replaceAndFormat(Lang.successUsernameRetrieved, replace))
                     .setEphemeral(true)
                     .queue();
+
+            plugin.getLogger().info(
+                    String.format("User %s (%s) executed %s command for target %s",
+                            event.getUser().getName(),
+                            event.getUser().getId(),
+                            command,
+                            username)
+            );
         }
     }
 }
