@@ -18,8 +18,24 @@ import java.util.Map;
 import java.util.UUID;
 
 public class DiscordCommandListener extends ListenerAdapter {
+    private final Map<String, Long> lastCommandUsage = new HashMap<>();
+    private static final long COMMAND_COOLDOWN_MS = 3000;
+
     @Override
     public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {
+        String userId = event.getUser().getId();
+        long currentTime = System.currentTimeMillis();
+        if (lastCommandUsage.containsKey(userId)) {
+            long lastUsage = lastCommandUsage.get(userId);
+            if (currentTime - lastUsage < COMMAND_COOLDOWN_MS) {
+                event.reply("Please wait before using commands again.")
+                        .setEphemeral(true)
+                        .queue();
+                return;
+            }
+        }
+        lastCommandUsage.put(userId, currentTime);
+
         String command = event.getName();
 
         if ("whitelist".equalsIgnoreCase(command)) {
