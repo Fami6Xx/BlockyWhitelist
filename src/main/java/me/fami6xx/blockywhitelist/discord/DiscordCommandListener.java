@@ -381,12 +381,12 @@ public class DiscordCommandListener extends ListenerAdapter {
 
     @Override
     public void onButtonInteraction(ButtonInteractionEvent event) {
-        if (event.getComponentId().contentEquals("confirm-bwl-")) {
-            String userId = event.getComponentId().substring(11);
+        if (event.getComponentId().contains("confirm-bwl-")) {
+            String userId = event.getComponentId().substring(12);
             BlockyWhitelist plugin = BlockyWhitelist.getInstance();
             JSONStore jsonStore = plugin.getJsonStore();
 
-            User toWhitelistUser = event.getJDA().getUserById(userId);
+            Member toWhitelistUser = event.getGuild().getMemberById(userId);
             if (toWhitelistUser == null) {
                 event.reply("User not found.")
                         .setEphemeral(true)
@@ -429,7 +429,7 @@ public class DiscordCommandListener extends ListenerAdapter {
                     String.format("User %s (%s) confirmed whitelist for target %s",
                             event.getUser().getName(),
                             event.getUser().getId(),
-                            toWhitelistUser.getName())
+                            toWhitelistUser.getUser().getName())
             );
         }
 
